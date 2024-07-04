@@ -1,0 +1,5 @@
+openai>1,<2
+pdfminer-six
+setuptools==68.2.2
+fastapi
+uvicorn
