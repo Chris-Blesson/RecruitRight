@@ -3,16 +3,15 @@ import { client } from "@/app/utils/algoliaRecommendationClient";
 // related-products
 export async function GET(
   req: Request,
-  { params }: { params: { userId: string } }
+  { params }: { params: { jobId: string } }
 ) {
-  const userId = params.userId;
-
+  const jobId = params.jobId;
   try {
     const results = await client.getRecommendations([
       {
-        indexName: "candidates",
+        indexName: "jobs",
         model: "related-products",
-        objectID: userId,
+        objectID: jobId,
       },
     ]);
     console.log("results", results);
