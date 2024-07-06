@@ -3,24 +3,25 @@ import { client } from "@/app/utils/algoliaRecommendationClient";
 // related-products
 export async function GET(
   req: Request,
-  { params }: { params: { jobId: string } }
+  { params }: { params: { userId: string } }
 ) {
-  const jobId = params.jobId;
+  const userId = params.userId;
+  console.log("User Id", userId);
   try {
-    client
-      .getRecommendations({
-        indexName: "jobs",
+    const results = await client.getRecommendations([
+      {
+        indexName: "candidates",
         model: "related-products",
-        objectID: jobId,
-      })
-      .then(({ results }) => {
-        console.log(results);
-      });
+        objectID: "chrisblesson2598@gmail.com",
+      },
+    ]);
+    console.log("results", results);
     return NextResponse.json({
+      results,
       status: "ok",
     });
   } catch (e) {
-    const error = JSON.stringify(e);
+    const error = e;
     console.log(error);
     return NextResponse.json({
       error,
