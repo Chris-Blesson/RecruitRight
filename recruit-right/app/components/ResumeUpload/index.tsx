@@ -2,25 +2,42 @@
 import { RcFile, UploadProps } from "antd/es/upload";
 import { useState } from "react";
 import FileUpload from "../FileUpload";
-import { Button, GetProp } from "antd";
+import { Button, GetProp, message } from "antd";
+import { useRouter } from "next/navigation";
 type FileType = Parameters<GetProp<UploadProps, "beforeUpload">>[0];
 
 const ResumeUploader = () => {
   const [uploadedResume, setUploadedResume] = useState<RcFile>();
-
+  const [loading, setLoading] = useState(false);
+  const [isResumeUploaded, setIsResumeUploaded] = useState(false);
+  const router = useRouter();
   const handleFileUpload = (file?: RcFile) => {
     setUploadedResume(file);
   };
 
   const startYourJourneyClick = (e: { stopPropagation: () => void }) => {
     e.stopPropagation();
-    console.log("uploaded resume", uploadedResume);
     const formData = new FormData();
     formData.append("file", uploadedResume as FileType);
+    setLoading(true);
     fetch("/api/resume/upload", {
       method: "POST",
       body: formData,
-    });
+    })
+      .then(() => {
+        message.success("Resume is safe with us!");
+        setIsResumeUploaded(true);
+        setTimeout(() => {
+          router.push("/jobs");
+        }, 1000);
+      })
+      .catch((err) => {
+        message.error("Something went wrong while uploading the resume");
+        console.log("error", err);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
   };
 
   return (
@@ -37,9 +54,12 @@ const ResumeUploader = () => {
           <Button
             type="primary"
             onClick={startYourJourneyClick}
-            disabled={!uploadedResume}
+            disabled={!uploadedResume || loading || isResumeUploaded}
+            loading={loading || isResumeUploaded}
           >
-            Start Your Journey!
+            {!isResumeUploaded
+              ? "Start Your Journey!"
+              : "Starting your journey..."}
           </Button>
         </div>
       </div>

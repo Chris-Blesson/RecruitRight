@@ -42,7 +42,6 @@ const FileUpload = (props: IFileUpload) => {
   return (
     <Dragger
       beforeUpload={(file) => {
-        console.log("BU", file);
         setFile(file);
         return false;
       }}
