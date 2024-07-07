@@ -1,8 +1,6 @@
-// Ref: https://github.com/porsager/postgres
-import postgres from "postgres";
-
-const sql = postgres(
-  "postgres://postgres:postgres@localhost:5432/recruitRight"
-);
-
-export default sql;
+export const knex = require("knex")({
+  client: "pg",
+  version: "15.0",
+  connection: "postgres://postgres:postgres@localhost:5432/recruitRight",
+  searchPath: ["knex", "public"],
+});
