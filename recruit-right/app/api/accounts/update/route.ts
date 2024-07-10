@@ -2,10 +2,7 @@ import { REQUIRED_KEYS_IN_RESUME_PAYLOAD } from "@/constants/resumePayloadFields
 import { knex } from "@/lib/db";
 import { NextResponse } from "next/server";
 
-export async function POST(
-  req: Request,
-  { params }: { params: { id: string } }
-) {
+export async function POST(req: Request) {
   const requestBody = await req.json();
   if (!requestBody) {
     return NextResponse.json(
@@ -20,7 +17,8 @@ export async function POST(
   //destructured properties are not allowed for updation
   const { account_id, type, organisation, created_at, resume_url, ...rest } =
     requestBody;
-  const accountId = params.id;
+  //TODO: Get this from authentication
+  const accountId = "1";
   const accountIdInReqBody = requestBody.account_id;
   console.log("account id in route", accountId);
   console.log("update account req payload", requestBody);

@@ -1,5 +1,11 @@
+import BasicInformation from "./JobSeekerDetails/BasicInformation";
+
 const UserDetails = () => {
-  return <div>UserDetails</div>;
+  return (
+    <div>
+      <BasicInformation />
+    </div>
+  );
 };
 
 export default UserDetails;
