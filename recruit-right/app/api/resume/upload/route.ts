@@ -67,12 +67,16 @@ export async function POST(req: Request) {
 
     const trxProvider = knex.transactionProvider();
     const trx = await trxProvider();
+
     //Generate the process id
     //Create a record for the process
     //Call the resume-parser api
     try {
       //Generate the process id
       const processId = entityIdGenerator("process");
+
+      //TODO: Update the resume url in accounts table
+
       //Insert the process to table
       await knex("process").insert({
         account_id: accountId,
