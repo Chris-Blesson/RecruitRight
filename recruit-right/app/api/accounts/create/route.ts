@@ -16,18 +16,20 @@ export async function POST(req: Request) {
     );
   }
   const accountId = entityIdGenerator("account");
-  const { email, name, type, organisation } = requestBody;
-  if (!email || !name || !type) {
+  //TODO: get email from authentication
+  const email = "lp@lp.com";
+  const { name, type, organisation } = requestBody;
+  if (!type) {
     return NextResponse.json(
       {
-        message: "Missing required parameters. Email, name and type",
+        message: "Missing required parameter-type",
       },
       {
         status: 400,
       }
     );
   }
-  if (type === ACCOUNT_TYPE.RECRUITER && !organisation) {
+  if (type === ACCOUNT_TYPE.RECRUITER && (!organisation || !name || !email)) {
     return NextResponse.json(
       {
         message: "Organisation is missing for type recruiter",

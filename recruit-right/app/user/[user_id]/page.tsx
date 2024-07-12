@@ -1,5 +1,11 @@
+import Education from "./JobSeekerDetails/Education";
+
 const UserDetails = () => {
-  return <div>UserDetails</div>;
+  return (
+    <div>
+      <Education />
+    </div>
+  );
 };
 
 export default UserDetails;
