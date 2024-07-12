@@ -1,6 +1,15 @@
 "use client";
 import { useAccountsContext } from "@/app/components/AccountsContext";
-import { Button, Collapse, Form, Input, message, Modal, Space } from "antd";
+import {
+  Button,
+  Collapse,
+  Form,
+  Input,
+  message,
+  Modal,
+  Popconfirm,
+  Space,
+} from "antd";
 import { useEffect, useState } from "react";
 import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
 const ReadOnlyViewCollapsibleContent = ({
@@ -173,10 +182,166 @@ const EditEducationForm = ({
     </Form>
   );
 };
+
+const AddEducationForm = ({ onSuccess, onError, onCancel }) => {
+  const [form] = Form.useForm();
+  const { accountDetails, accountContextLoading, updateAccountDetails } =
+    useAccountsContext();
+
+  const educationResumePayload =
+    accountDetails?.["resume_payload"]?.["education"];
+
+  const initialValues = {};
+  const formItemData = [
+    {
+      label: "Institution",
+      name: "institution",
+      value: "",
+      placeholder: "Your institution",
+    },
+    {
+      label: "Area",
+      name: "area",
+      value: "",
+      placeholder: "Your specialisation",
+    },
+    {
+      label: "Degree",
+      name: "studyType",
+      value: "",
+      placeholder: "B.Tech",
+    },
+    {
+      label: "Location",
+      name: "location",
+      value: location,
+      placeholder: "Bangalore, India",
+    },
+    {
+      label: "From year",
+      name: "startDate",
+      value: "",
+      placeholder: "YYYY",
+    },
+    {
+      label: "Till year",
+      name: "endDate",
+      value: "",
+      placeholder: "YYYY",
+    },
+  ];
+
+  const addEducationDetails = (educationDetails) => {
+    const requestPayload = {
+      ...accountDetails,
+      resume_payload: {
+        ...accountDetails["resume_payload"],
+        education: [...educationResumePayload, { ...educationDetails }],
+      },
+    };
+    updateAccountDetails(requestPayload, {
+      onSuccess() {
+        message.success("Education information added successfully");
+        onSuccess();
+      },
+      onError() {
+        message.error(
+          "Something went wrong while updating education information"
+        );
+        onError();
+      },
+    });
+  };
+  return (
+    <Form
+      form={form}
+      initialValues={initialValues}
+      onFinish={addEducationDetails}
+      layout="vertical"
+    >
+      {formItemData.map((formItem) => {
+        return (
+          <Form.Item
+            key={formItem.label}
+            name={formItem.name}
+            label={formItem.label}
+            rules={[{ required: true }]}
+          >
+            <Input placeholder={formItem.placeholder} />
+          </Form.Item>
+        );
+      })}
+      <Form.Item>
+        <Space>
+          <Button
+            type="primary"
+            htmlType="submit"
+            disabled={accountContextLoading}
+            loading={accountContextLoading}
+          >
+            Submit
+          </Button>
+          <Button
+            htmlType="button"
+            onClick={() => {
+              form.resetFields();
+              onCancel();
+            }}
+            disabled={accountContextLoading}
+          >
+            Cancel
+          </Button>
+        </Space>
+      </Form.Item>
+    </Form>
+  );
+};
+
+const PopConfirmDelete = ({ idx, deleteEducationInformation }) => {
+  const [popConfirmOpen, setPopConfirmOpen] = useState(false);
+  const onConfirm = () => {
+    console.log("idx", idx);
+    deleteEducationInformation({
+      idx,
+      onSuccess: () => {
+        setPopConfirmOpen(false);
+      },
+      onError: () => {
+        setPopConfirmOpen(false);
+      },
+    });
+  };
+
+  return (
+    <Popconfirm
+      title="Delete?"
+      description="Are you sure to delete this education information?"
+      onConfirm={onConfirm}
+      onCancel={() => {
+        setPopConfirmOpen(false);
+      }}
+      okText="Yes"
+      cancelText="No"
+      placement="left"
+      open={popConfirmOpen}
+    >
+      <button
+        onClick={(e) => {
+          e.stopPropagation();
+          setPopConfirmOpen(true);
+        }}
+      >
+        <DeleteOutlined />
+      </button>
+    </Popconfirm>
+  );
+};
 const Education = () => {
   const { accountDetails, accountContextLoading, updateAccountDetails } =
     useAccountsContext();
-  const [readOnlyMode, setReadOnlyMode] = useState(true);
+
+  const [addEducationModalOpen, setAddEducationModalOpen] = useState(false);
+
   const [editIndex, setEditIndex] = useState(null);
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [educationDetails, setEducationDetails] = useState(
@@ -190,6 +355,28 @@ const Education = () => {
     return <p>Not available yet</p>;
   }
 
+  const deleteEducationInformation = ({ idx, onSuccess, onError }) => {
+    educationDetails.splice(idx, 1);
+    const requestPayload = {
+      ...accountDetails,
+      resume_payload: {
+        ...accountDetails["resume_payload"],
+        education: [...educationDetails],
+      },
+    };
+    updateAccountDetails(requestPayload, {
+      onSuccess() {
+        message.success("Education information updated successfully");
+        onSuccess();
+      },
+      onError() {
+        message.error(
+          "Something went wrong while updating education information"
+        );
+        onError();
+      },
+    });
+  };
   const EditOrDeleteEducation = ({ idx }) => {
     return (
       <div className="flex items-center">
@@ -203,13 +390,10 @@ const Education = () => {
         >
           <EditOutlined />
         </button>
-        <button
-          onClick={(e) => {
-            e.stopPropagation();
-          }}
-        >
-          <DeleteOutlined />
-        </button>
+        <PopConfirmDelete
+          idx={idx}
+          deleteEducationInformation={deleteEducationInformation}
+        />
       </div>
     );
   };
@@ -228,30 +412,32 @@ const Education = () => {
   const closeEditModal = () => {
     setEditModalOpen(false);
   };
+
+  const closeAddEducationModal = () => {
+    setAddEducationModalOpen(false);
+  };
   return (
     <>
       <div>
-        <div className="flex items-center justify-between mb-2">
+        <div className="flex justify-between items-center mb-2">
           <h3>Basic Information</h3>
-          {readOnlyMode && (
+          <div>
             <Button
-              type="text"
+              type="primary"
               onClick={() => {
-                setReadOnlyMode(!readOnlyMode);
+                setAddEducationModalOpen(true);
               }}
             >
-              Edit
+              Add Education
             </Button>
-          )}
+          </div>
         </div>
         <div>
-          {readOnlyMode && (
-            <Collapse
-              items={readOnlyViewData}
-              defaultActiveKey={["0"]}
-              accordion
-            />
-          )}
+          <Collapse
+            items={readOnlyViewData}
+            defaultActiveKey={["0"]}
+            accordion
+          />
         </div>
       </div>
       <Modal
@@ -267,6 +453,20 @@ const Education = () => {
           onError={closeEditModal}
           onCancel={closeEditModal}
           idxToUpdate={editIndex}
+        />
+      </Modal>
+      <Modal
+        title="Add Education information"
+        centered
+        open={addEducationModalOpen}
+        closeIcon={<></>}
+        footer={[]}
+      >
+        <AddEducationForm
+          {...educationDetails[editIndex]}
+          onSuccess={closeAddEducationModal}
+          onError={closeAddEducationModal}
+          onCancel={closeAddEducationModal}
         />
       </Modal>
     </>
