@@ -1,9 +1,9 @@
-import Education from "./JobSeekerDetails/Education";
+import JobSeekerDetails from "./JobSeekerDetails";
 
 const UserDetails = () => {
   return (
     <div>
-      <Education />
+      <JobSeekerDetails />
     </div>
   );
 };
