@@ -237,7 +237,10 @@ const AddWorkExperienceForm = ({ onSuccess, onError, onCancel }) => {
       ...accountDetails,
       resume_payload: {
         ...accountDetails["resume_payload"],
-        work: [...workResumePayload, { ...workDetails }],
+        work: [
+          ...workResumePayload,
+          { ...workDetails, highlights: workDetails.highlights.split(",") },
+        ],
       },
     };
     updateAccountDetails(requestPayload, {
