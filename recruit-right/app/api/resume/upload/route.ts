@@ -6,7 +6,7 @@ import { entityIdGenerator } from "@/lib/entityIdGenerator";
 import { RESUME_PARSER_STATUS } from "@/constants/resumeParserStatus";
 import { PROCESS_TYPE } from "@/constants/processTypes";
 import { knex } from "@/lib/db";
-
+import fs from "fs";
 /**
  *
  * This function is for uploading the resume
@@ -37,7 +37,6 @@ export async function POST(req: Request) {
 
   try {
     // Write the file to the specified directory (public/assets) with the modified filename
-    await writeFile(path.join(process.cwd(), "./" + filename), buffer);
 
     //TODO: Get acc id from the header
     const accountId = "1";
@@ -54,6 +53,7 @@ export async function POST(req: Request) {
       accountId,
       inProgressJob,
     });
+
     if (inProgressJob) {
       return NextResponse.json(
         {
@@ -68,6 +68,10 @@ export async function POST(req: Request) {
     const trxProvider = knex.transactionProvider();
     const trx = await trxProvider();
 
+    const filePath = path.join(
+      process.cwd(),
+      "/public/generated-pdf/resumes/" + accountId + ".pdf"
+    );
     //Generate the process id
     //Create a record for the process
     //Call the resume-parser api
@@ -75,8 +79,15 @@ export async function POST(req: Request) {
       //Generate the process id
       const processId = entityIdGenerator("process");
 
-      //TODO: Update the resume url in accounts table
+      await writeFile(filePath, buffer);
+      console.log(">>>File created successfully", accountId);
 
+      //TODO: Update the resume url in accounts table
+      await knex("accounts")
+        .where("account_id", accountId)
+        .update({
+          resume_url: `/generated-pdf/resumes/${accountId}.pdf`,
+        });
       //Insert the process to table
       await knex("process").insert({
         account_id: accountId,
@@ -91,6 +102,7 @@ export async function POST(req: Request) {
     } catch (err) {
       console.log("[RESUME_UPLOAD]Error in the transaction", err);
       await trx.rollback();
+      await fs.unlink(filePath, () => {});
       throw err;
     }
   } catch (error) {
