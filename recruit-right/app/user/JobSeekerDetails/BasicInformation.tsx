@@ -3,7 +3,7 @@ import { useAccountsContext } from "@/app/components/AccountsContext";
 import { Button, Form, Input, message, Space } from "antd";
 import { useState } from "react";
 
-const ReadOnlyView = ({ label, value }: { label: string; value: string }) => {
+const ReadOnlyView = ({ label, value }) => {
   return (
     <div>
       <p>{label}</p>
