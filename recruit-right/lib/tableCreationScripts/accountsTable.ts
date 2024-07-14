@@ -5,7 +5,7 @@ export const CreateAccountTable = async () => {
         account_id varchar(128) PRIMARY KEY NOT NULL,
         type varchar(128) NOT NULL,
         email varchar(128) NOT NULL,
-        name varchar(128) NOT NULL,
+        name varchar(128),
         resume_url varchar(128),
         resume_payload json,
         organisation varchar(128),
