@@ -1,5 +1,5 @@
 "use client";
-import { Button, Form, Input, Select } from "antd";
+import { Button, Form, Input } from "antd";
 const CreateTemplateForm = ({ onSubmitHandler, onCancelClick }) => {
   const [form] = Form.useForm();
   return (

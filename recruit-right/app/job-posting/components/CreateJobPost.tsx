@@ -8,16 +8,10 @@ const CreateJobPost = () => {
   const [form] = Form.useForm();
 
   const applyTemplate = ({ template }: { template: ITemplate }) => {
-    form.setFields([
-      {
-        name: ["company_name"],
-        value: template?.company_name,
-      },
-      {
-        name: ["company_description"],
-        value: template?.company_description,
-      },
-    ]);
+    form.setFieldsValue({
+      company_name: template?.company_name,
+      company_description: template?.company_description,
+    });
   };
   return (
     <div className="create-job-post-layout m-6  bg-white flex-1 rounded-lg shadow-lg">

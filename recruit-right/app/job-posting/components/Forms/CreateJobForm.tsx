@@ -1,14 +1,47 @@
 "use client";
-import { Button, Form, Input, Select } from "antd";
+import { transformJobCreationPayload } from "@/app/utils/transforms";
+import { Button, Form, Input, Select, message } from "antd";
 import { DatePicker } from "antd";
+import { useState } from "react";
+import QuestionEmptyState from "../Questions/QuestionEmptyState";
+import QuestionsList from "../Questions/QuestionsList";
 
 const { RangePicker } = DatePicker;
 
 const CreateJobForm = ({ form }) => {
+  const [questions, setQuestions] = useState([
+    "How do you handle conflicts in your workplace ?",
+    "Why do you handle conflicts in your workplace ?",
+  ]);
   const onFinish = (values: any) => {
-    console.log("Finish:", values);
+    fetch("/api/job/create", {
+      method: "POST",
+      body: JSON.stringify({
+        ...transformJobCreationPayload(values),
+        questions: {
+          questions,
+        },
+      }),
+    })
+      .then((res) => {
+        message.success("Job posting created successfully");
+        return res.json();
+      })
+      .catch((err) => {
+        message.error("Something went wrong while creating a job post");
+        console.log("error", err);
+      });
   };
-  
+
+  const showQuestionsEmptyState = questions?.length === 0;
+  form.setFieldsValue({
+    org_id: 1,
+    status: "yet_to_start",
+  });
+  const offerType = Form.useWatch("offer_type", form);
+  const showContractDuration =
+    offerType === "contract" || offerType === "freelancing";
+
   return (
     <Form
       className="max-w-[750px] p-6 flex flex-col gap-y-5"
@@ -61,13 +94,55 @@ const CreateJobForm = ({ form }) => {
             ]}
           />
         </Form.Item>
+        {showContractDuration && (
+          <Form.Item label="Contract duration" name="contract_duration">
+            <Input placeholder="6 months" />
+          </Form.Item>
+        )}
+
+        <div className="flex items-center gap-x-3">
+          <Form.Item
+            name="compensation_currency"
+            label="Compensation Currency"
+            rules={[{ required: true }]}
+          >
+            <Input placeholder="USD" />
+          </Form.Item>
+          <Form.Item
+            className="flex-1"
+            name="compensation_amount"
+            label="Compensation Amount"
+            rules={[{ required: true }]}
+          >
+            <Input placeholder="2000" />
+          </Form.Item>
+        </div>
+        <Form.Item
+          className="flex-1"
+          name="location"
+          label="Location"
+          rules={[{ required: true }]}
+        >
+          <Input placeholder="Banglore" />
+        </Form.Item>
+        <Form.Item className="flex-1 hidden" name="org_id" label="Organisation">
+          <Input type="hidden" placeholder="Org_id" />
+        </Form.Item>
+        <Form.Item className="flex-1 hidden" name="status" label="Status">
+          <Input type="hidden" placeholder="Status" />
+        </Form.Item>
         <Form.Item
           label="Contest date"
           name="contest_date"
           rules={[{ required: true }]}
         >
-          <RangePicker showTime />
+          <RangePicker format="YYYY-MM-DD HH:mm:ss" showTime />
         </Form.Item>
+      </div>
+      <div className="form_question_section flex flex-col gap-y-4">
+        <h2 className="font-semibold text-base">Questions</h2>
+        {showQuestionsEmptyState && <QuestionEmptyState />}
+        {!showQuestionsEmptyState && <QuestionsList questions={questions} />}
       </div>
       <Form.Item shouldUpdate>
         {() => (
@@ -75,7 +150,6 @@ const CreateJobForm = ({ form }) => {
             type="primary"
             htmlType="submit"
             disabled={
-              !form.isFieldsTouched(true) ||
               !!form.getFieldsError().filter(({ errors }) => errors.length)
                 .length
             }
