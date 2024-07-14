@@ -6,19 +6,19 @@ import { useApplicationDetailsContext } from "./ApplicationDetailsContext";
 const ApplicationDetailsHeader = () => {
   const {
     questions,
-    setCurrentSelectedQuestion,
+    setCurrentSelectedQuestionIndex,
     currentSelectedQuestionIndex,
   } = useApplicationDetailsContext();
 
   const onChange = (e) => {
-    setCurrentSelectedQuestion(e.target.value);
+    setCurrentSelectedQuestionIndex(e.target.value);
   };
   return (
     <Radio.Group onChange={onChange} value={currentSelectedQuestionIndex}>
-      {questions.map((question, idx) => {
+      {questions.map((_, idx) => {
         return (
           <Radio.Button value={idx} key={idx}>
-            {question.text}
+            Question {idx + 1}
           </Radio.Button>
         );
       })}

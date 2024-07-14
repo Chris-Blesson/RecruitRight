@@ -22,7 +22,7 @@ export const POST = async (req) => {
   try {
     //TODO: Get the accid from auth
     const accountId = "1";
-    const job = await knex("jobs").where("job_id", jobId).first();
+    const job = await knex("job").where("job_id", jobId).first();
     const isJobAvailable = !!job;
     if (!isJobAvailable) {
       return NextResponse.json(
@@ -50,7 +50,7 @@ export const POST = async (req) => {
       .first();
 
     const isTestInProgress = !!submissionRecord;
-    const jobDetails = await knex("jobs")
+    const jobDetails = await knex("job")
       .where({ job_id: jobId })
       .select("questions")
       .first();
@@ -58,7 +58,7 @@ export const POST = async (req) => {
       return NextResponse.json(
         {
           submissionId: submissionRecord["submission_id"],
-          questions: jobDetails.questions,
+          questions: jobDetails.questions.questions,
         },
         {
           status: 200,
@@ -84,7 +84,7 @@ export const POST = async (req) => {
     return NextResponse.json(
       {
         submissionId,
-        questions: jobDetails.questions,
+        questions: jobDetails.questions.questions,
       },
       {
         status: 200,

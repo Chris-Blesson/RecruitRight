@@ -8,7 +8,7 @@ const Footer = () => {
   const {
     currentSelectedQuestionIndex,
     questions,
-    setCurrentSelectedQuestion,
+    setCurrentSelectedQuestionIndex,
   } = useApplicationDetailsContext();
   const { onSaveHandler, onSubmissionEndHandler } = useAnswerContext();
 
@@ -21,7 +21,7 @@ const Footer = () => {
         disabled={currentSelectedQuestionIndex === 0}
         onClick={(e) => {
           e.stopPropagation();
-          setCurrentSelectedQuestion(currentSelectedQuestionIndex - 1);
+          setCurrentSelectedQuestionIndex(currentSelectedQuestionIndex - 1);
         }}
         className={clsx(
           totalNoOfQuestions > 1 && currentSelectedQuestionIndex !== 0
@@ -37,7 +37,7 @@ const Footer = () => {
           e.stopPropagation();
           if (isSaveAndNext) {
             onSaveHandler();
-            setCurrentSelectedQuestion(currentSelectedQuestionIndex + 1);
+            setCurrentSelectedQuestionIndex(currentSelectedQuestionIndex + 1);
           } else {
             //Trigger submit call
             onSubmissionEndHandler();

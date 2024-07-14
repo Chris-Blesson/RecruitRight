@@ -12,7 +12,7 @@ export const startApplicationTest = async ({ jobId }) => {
   try {
     //TODO: Get the accid from auth
     const accountId = "1";
-    const job = await knex("jobs").where("job_id", jobId).first();
+    const job = await knex("job").where("job_id", jobId).first();
 
     const isJobAvailable = !!job;
     if (!isJobAvailable) {
@@ -36,28 +36,36 @@ export const startApplicationTest = async ({ jobId }) => {
         account_id: accountId,
         status: SUBMISSION_STATUS.COMPLETED,
       })
-      .select(["submission_id", "status"])
+      .select(["submission_id", "status", "started_at", "ended_at"])
       .first();
 
-    const [isTestInProgress, isTestCompleted] = [
-      submissionRecord.status === SUBMISSION_STATUS.IN_PROGRESS,
-      submissionRecord.status === SUBMISSION_STATUS.COMPLETED ||
-        submissionRecord.status === SUBMISSION_STATUS.EVALUATION_PENDING,
-    ];
-    const jobDetails = await knex("jobs")
+    const jobDetails = await knex("job")
       .where({ job_id: jobId })
       .select("questions")
       .first();
-    if (isTestInProgress) {
-      return {
-        submissionId: submissionRecord["submission_id"],
-        questions: jobDetails.questions,
-      };
-    }
-    if (isTestCompleted) {
-      return {
-        message: "Application already submitted",
-      };
+    if (submissionRecord) {
+      const [isTestInProgress, isTestCompleted] = [
+        submissionRecord.status === SUBMISSION_STATUS.IN_PROGRESS,
+        submissionRecord.status === SUBMISSION_STATUS.COMPLETED ||
+          submissionRecord.status === SUBMISSION_STATUS.EVALUATION_PENDING,
+      ];
+
+      if (isTestInProgress) {
+        return {
+          submissionId: submissionRecord["submission_id"],
+          questions: jobDetails.questions.questions,
+          started_at: submissionRecord["started_at"],
+          ended_at: submissionRecord["ended_at"],
+          account_id: accountId,
+          job_id: jobId,
+          status: SUBMISSION_STATUS.IN_PROGRESS,
+        };
+      }
+      if (isTestCompleted) {
+        return {
+          message: "Application already submitted",
+        };
+      }
     }
     const submissionId = entityIdGenerator("submission");
     const startedAt = new Date();
@@ -75,8 +83,7 @@ export const startApplicationTest = async ({ jobId }) => {
     await knex("submissions").insert({ ...createSubmissionPayload });
     await trx.commit();
     return {
-      submissionId: submissionRecord["submission_id"],
-      questions: jobDetails.questions,
+      questions: jobDetails.questions.questions,
       ...createSubmissionPayload,
     };
   } catch (err) {

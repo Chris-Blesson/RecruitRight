@@ -42,7 +42,7 @@ const AnswerContextProvider = ({ children, jobId }) => {
         testResponse: answer,
       };
 
-      fetch("/submission/save", {
+      fetch("/api/submission/save", {
         method: "POST",
         body: JSON.stringify(requestBody),
       })
@@ -66,7 +66,7 @@ const AnswerContextProvider = ({ children, jobId }) => {
         jobId,
         testResponse: answer,
       };
-      fetch("/submission/end", {
+      fetch("/api/submission/end", {
         method: "POST",
         body: JSON.stringify(requestBody),
       })
@@ -89,7 +89,7 @@ const AnswerContextProvider = ({ children, jobId }) => {
 
   const savedAnswerFetcher = () => {
     setIsInitialAnswerFetching(true);
-    fetch(`/submission/${jobId}/answer`, {
+    fetch(`/api/submission/${jobId}/answer`, {
       cache: "no-store",
     })
       .then((response) => {

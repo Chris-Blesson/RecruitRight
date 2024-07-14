@@ -19,6 +19,7 @@ const JobApplyPage = async ({ params }: { params: { job_id: string } }) => {
     const startContestDetails = await startApplicationTest({
       jobId,
     });
+    console.log("startContestDetails", startContestDetails);
     const isContestAlreadyEnded =
       startContestDetails?.message === "Application already submitted";
     if (isContestAlreadyEnded) {
@@ -36,7 +37,7 @@ const JobApplyPage = async ({ params }: { params: { job_id: string } }) => {
       );
     }
     //@ts-ignore
-    const applicationDetails = startContestDetails?.questions;
+    const applicationDetails = startContestDetails;
 
     //TODO: Contest ended page
 

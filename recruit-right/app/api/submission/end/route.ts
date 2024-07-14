@@ -12,7 +12,7 @@ export const POST = async (req) => {
   if (!jobId || !testResponse) {
     return NextResponse.json(
       {
-        message: "Job ID or response is missing",
+        message: "Job ID or testResponse is missing",
       },
       {
         status: 400,
@@ -25,7 +25,7 @@ export const POST = async (req) => {
   try {
     //TODO: Get the accid from auth
     const accountId = "1";
-    const job = await knex("jobs").where("job_id", jobId).first();
+    const job = await knex("job").where("job_id", jobId).first();
     const isJobAvailable = !!job;
     if (!isJobAvailable) {
       return NextResponse.json(
@@ -63,13 +63,13 @@ export const POST = async (req) => {
     }
 
     const evaluationResponsePayload = {
-      test_response: testResponse,
+      test_response: { response: testResponse },
       status: SUBMISSION_STATUS.EVALUATION_PENDING,
     };
 
     console.log("evaluation response payload", evaluationResponsePayload);
     const processId = entityIdGenerator("process");
-    await knex("process").create({
+    await knex("process").insert({
       account_id: accountId,
       process_id: processId,
       process_type: PROCESS_TYPE.RESPONSE_EVALUATION,

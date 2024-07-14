@@ -17,10 +17,8 @@ export const CreateJobTable = async () => {
 	compensation_currency varchar NOT NULL,
 	"location" varchar NOT NULL,
 	org_id varchar NOT NULL,
+	questions json NOT NULL,
 	CONSTRAINT job_pk PRIMARY KEY (job_id)
 );
 `);
-  await knex.raw(`
-    ALTER TABLE public.job ADD questions json NOT NULL;
-  `);
 };

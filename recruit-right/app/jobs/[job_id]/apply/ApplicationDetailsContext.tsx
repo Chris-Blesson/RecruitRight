@@ -2,14 +2,10 @@
 import { createContext, useContext, useState } from "react";
 
 const ApplicationDetailsContext = createContext({
-  questions: [
-    {
-      text: "Sample question",
-    },
-  ],
+  questions: [""],
   submissionId: "",
   ended_at: "",
-  setCurrentSelectedQuestion: (index) => null,
+  setCurrentSelectedQuestionIndex: (index) => null,
   currentSelectedQuestionIndex: 0,
 });
 

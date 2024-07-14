@@ -1,4 +1,5 @@
 import { CreateAccountTable } from "@/lib/tableCreationScripts/accountsTable";
+import { CreateJobTable } from "@/lib/tableCreationScripts/jobTable";
 import { CreateSubmissionsTable } from "@/lib/tableCreationScripts/submissionsTable";
 import { NextResponse } from "next/server";
 
@@ -11,6 +12,9 @@ export async function POST(req: any) {
       break;
     case "submissions":
       await CreateSubmissionsTable();
+      break;
+    case "jobs":
+      await CreateJobTable();
       break;
     default:
       break;

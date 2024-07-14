@@ -8,7 +8,7 @@ const ApplicationQuestion = () => {
 
   return (
     <div>
-      <p>{questionDetails.text}</p>
+      <p>{questionDetails}</p>
     </div>
   );
 };
