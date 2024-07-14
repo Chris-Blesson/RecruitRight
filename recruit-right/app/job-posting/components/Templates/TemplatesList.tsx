@@ -40,7 +40,7 @@ const TemplatesList = ({
 }) => {
   return (
     <div className="flex flex-col gap-y-5">
-      {templates.map((template) => (
+      {templates?.map?.((template) => (
         <TemplateCard
           applyTemplate={applyTemplate}
           template={template}

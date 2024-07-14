@@ -5,8 +5,20 @@ import { DatePicker } from "antd";
 import { useState } from "react";
 import QuestionEmptyState from "../Questions/QuestionEmptyState";
 import QuestionsList from "../Questions/QuestionsList";
+import AIPrompt from "@/app/components/AIPrompt";
 
 const { RangePicker } = DatePicker;
+
+const { Option } = Select;
+
+const CurrencySelector = (
+  <Form.Item name="compensation_currency" noStyle>
+    <Select defaultValue={"USD"} className="min-w-[80px]">
+      <Option value="USD">USD</Option>
+      <Option value="INR">INR</Option>
+    </Select>
+  </Form.Item>
+);
 
 const CreateJobForm = ({ form }) => {
   const [questions, setQuestions] = useState([
@@ -42,6 +54,18 @@ const CreateJobForm = ({ form }) => {
   const showContractDuration =
     offerType === "contract" || offerType === "freelancing";
 
+  const promptGenerationHandler = async (content, fieldName) => {
+    const response = await fetch("/api/chatgpt", {
+      method: "POST",
+      body: JSON.stringify({ prompt: content }),
+    });
+    const data = await response.json();
+    // form.setFields([{ name: fieldName, value: data?.content }]);
+    form.setFieldsValue({
+      [fieldName]: data?.content,
+    });
+  };
+
   return (
     <Form
       className="max-w-[750px] p-6 flex flex-col gap-y-5"
@@ -59,8 +83,22 @@ const CreateJobForm = ({ form }) => {
           <Input placeholder="Acme Inc." />
         </Form.Item>
         <Form.Item
+          className="relative"
           name="company_description"
-          label="Culture of the company"
+          label={
+            <div className="flex items-center justify-between gap-x-2">
+              <p>Culture of the company</p>
+              <AIPrompt
+                triggerText=""
+                asyncSubmitHandler={async (content) => {
+                  return promptGenerationHandler(
+                    content,
+                    "company_description"
+                  );
+                }}
+              />
+            </div>
+          }
           rules={[
             { required: true, message: "Culture of the company is required" },
           ]}
@@ -68,8 +106,22 @@ const CreateJobForm = ({ form }) => {
           <Input.TextArea rows={4} />
         </Form.Item>
         <Form.Item
+          className="relative"
           name="job_description"
-          label="Job Description"
+          label={
+            <div className="flex items-center justify-between gap-x-2">
+              <p>Job Description</p>
+              <AIPrompt
+                triggerText=""
+                asyncSubmitHandler={async (content) => {
+                  return promptGenerationHandler(
+                    content,
+                    "job_description"
+                  );
+                }}
+              />
+            </div>
+          }
           rules={[{ required: true }]}
         >
           <Input.TextArea rows={4} />
@@ -102,19 +154,12 @@ const CreateJobForm = ({ form }) => {
 
         <div className="flex items-center gap-x-3">
           <Form.Item
-            name="compensation_currency"
-            label="Compensation Currency"
-            rules={[{ required: true }]}
-          >
-            <Input placeholder="USD" />
-          </Form.Item>
-          <Form.Item
             className="flex-1"
             name="compensation_amount"
             label="Compensation Amount"
             rules={[{ required: true }]}
           >
-            <Input placeholder="2000" />
+            <Input addonBefore={CurrencySelector} placeholder="2000" />
           </Form.Item>
         </div>
         <Form.Item
