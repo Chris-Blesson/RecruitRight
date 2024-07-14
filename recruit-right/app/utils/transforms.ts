@@ -18,3 +18,14 @@ export const transformCandidatePayload = (payload: IResumeData) => {
   };
   return { userId, userValues };
 };
+
+export const transformJobCreationPayload = (payload) => {
+  const { contest_date, ...rest } = payload;
+  const [start_date_time, end_date_time] = contest_date;
+
+  return {
+    start_date_time: start_date_time?.$d,
+    end_date_time: end_date_time?.$d,
+    ...rest,
+  };
+};
