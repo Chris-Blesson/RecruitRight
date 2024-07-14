@@ -4,11 +4,11 @@ import { DatePicker } from "antd";
 
 const { RangePicker } = DatePicker;
 
-const CreateJobForm = () => {
-  const [form] = Form.useForm();
+const CreateJobForm = ({ form }) => {
   const onFinish = (values: any) => {
     console.log("Finish:", values);
   };
+  
   return (
     <Form
       className="max-w-[750px] p-6 flex flex-col gap-y-5"
