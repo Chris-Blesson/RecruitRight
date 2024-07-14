@@ -8,7 +8,7 @@ const ApplicationAnswer = () => {
     useApplicationDetailsContext();
   const { answers, setAnswer } = useAnswerContext();
   const questionDetails = questions[currentSelectedQuestionIndex];
-  const questionText = questionDetails.text;
+  const questionText = questionDetails;
   const onChangeOfAnswer = (currentState) => {
     setAnswer((currentAnswerState) => {
       return {

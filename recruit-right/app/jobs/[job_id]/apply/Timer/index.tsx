@@ -6,7 +6,7 @@ import { useTimer } from "react-timer-hook";
 const Timer = ({ endTime }) => {
   const currentTime = moment().unix();
 
-  const timeDifference = endTime - currentTime;
+  const timeDifference = moment(endTime).unix() - currentTime;
 
   const expiryTime = new Date();
   expiryTime.setSeconds(expiryTime.getSeconds() + timeDifference);
@@ -18,7 +18,7 @@ const Timer = ({ endTime }) => {
   });
 
   return (
-    <Tag color={totalSeconds < 600 ? "red" : "line"}>
+    <Tag color={totalSeconds < 600 ? "red" : "lime"}>
       <span className="text-md font-bold">
         {minutes.toString().padStart(2, "0")}
       </span>

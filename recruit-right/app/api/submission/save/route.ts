@@ -9,7 +9,7 @@ export const POST = async (req) => {
   if (!jobId || !testResponse) {
     return NextResponse.json(
       {
-        message: "Job ID or response is missing",
+        message: "Job ID or testResponse is missing",
       },
       {
         status: 400,
@@ -22,7 +22,7 @@ export const POST = async (req) => {
   try {
     //TODO: Get the accid from auth
     const accountId = "1";
-    const job = await knex("jobs").where("job_id", jobId).first();
+    const job = await knex("job").where("job_id", jobId).first();
     const isJobAvailable = !!job;
     if (!isJobAvailable) {
       return NextResponse.json(
@@ -39,11 +39,7 @@ export const POST = async (req) => {
     const submissionRecord = await knex("submissions")
       .where({
         job_id: jobId,
-      })
-      .andWhere({
         account_id: accountId,
-      })
-      .andWhere({
         status: SUBMISSION_STATUS.IN_PROGRESS,
       })
       .select("submission_id")
@@ -62,14 +58,14 @@ export const POST = async (req) => {
     }
 
     const autoSavePayload = {
-      test_response: testResponse,
+      test_response: { response: testResponse },
     };
 
     console.log("autosave payload", autoSavePayload);
     await knex("submissions")
-      .where({ job_id: jobId })
-      .andWhere({ account_id: accountId })
-      .andWhere({
+      .where({
+        job_id: jobId,
+        account_id: accountId,
         status: SUBMISSION_STATUS.IN_PROGRESS,
       })
       .update(autoSavePayload);
