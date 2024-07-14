@@ -32,7 +32,7 @@ export async function POST(req: Request) {
   if (type === ACCOUNT_TYPE.RECRUITER && (!organisation || !name || !email)) {
     return NextResponse.json(
       {
-        message: "Organisation is missing for type recruiter",
+        message: "Organisation|name|email is missing for type recruiter",
       },
       {
         status: 400,
