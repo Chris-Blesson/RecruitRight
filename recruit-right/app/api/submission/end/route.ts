@@ -25,7 +25,10 @@ export const POST = async (req) => {
   try {
     //TODO: Get the accid from auth
     const accountId = "1";
-    const job = await knex("job").where("job_id", jobId).first();
+    const job = await knex("job")
+      .where("job_id", jobId)
+      .first()
+      .select(["role"]);
     const isJobAvailable = !!job;
     if (!isJobAvailable) {
       return NextResponse.json(
@@ -84,6 +87,7 @@ export const POST = async (req) => {
     evaluationResponse({
       accountId,
       jobId,
+      role: job.role,
       processId,
       testResponse,
     });
