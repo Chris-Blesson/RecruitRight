@@ -7,7 +7,7 @@ body {
   padding: 0;
   box-sizing: border-box;
   margin: 0;
-  background-color: #fdf7e4;
+  background-color: #fafafa;
 }
 
 @layer utilities {
