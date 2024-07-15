@@ -1,6 +1,7 @@
 import { fetchJobListing } from "@/lib/fetchJobListing";
 import { notFound } from "next/navigation";
 import JobListingTable from "./JobListingTable";
+import HeaderSetter from "../components/HeaderSetter";
 
 const Jobs = async () => {
   try {
@@ -9,7 +10,14 @@ const Jobs = async () => {
       return <p>No jobs found</p>;
     }
     console.log("jobs", jobs);
-    return <JobListingTable jobListing={jobs} />;
+    return (
+      <>
+        <div>
+          <HeaderSetter text={"Jobs"} />
+        </div>
+        <JobListingTable jobListing={jobs} />
+      </>
+    );
   } catch (err) {
     console.log("jobs error", err);
     return notFound();
