@@ -44,7 +44,7 @@ export const evaluationResponse = async ({
     console.log("evaluate response", evaluateResponse);
     //Update the evaluation in the submission table
     const updatePayload = {
-      status: SUBMISSION_STATUS.COMPLETED,
+      status: SUBMISSION_STATUS.SUBMITTED,
       evaluation: JSON.stringify({
         //@ts-ignore
         feedback: JSON.parse(evaluateResponse),

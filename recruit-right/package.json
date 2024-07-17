@@ -24,7 +24,8 @@
     "postgres": "^3.4.4",
     "react": "^18",
     "react-dom": "^18",
-    "react-timer-hook": "^3.0.7"
+    "react-timer-hook": "^3.0.7",
+    "resend": "^3.4.0"
   },
   "devDependencies": {
     "@types/node": "^20",

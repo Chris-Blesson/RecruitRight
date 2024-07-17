@@ -34,7 +34,7 @@ export const startApplicationTest = async ({ jobId }) => {
       })
       .orWhere({
         account_id: accountId,
-        status: SUBMISSION_STATUS.COMPLETED,
+        status: SUBMISSION_STATUS.SUBMITTED,
       })
       .select(["submission_id", "status", "started_at", "ended_at"])
       .first();
@@ -46,7 +46,7 @@ export const startApplicationTest = async ({ jobId }) => {
     if (submissionRecord) {
       const [isTestInProgress, isTestCompleted] = [
         submissionRecord.status === SUBMISSION_STATUS.IN_PROGRESS,
-        submissionRecord.status === SUBMISSION_STATUS.COMPLETED ||
+        submissionRecord.status === SUBMISSION_STATUS.SUBMITTED ||
           submissionRecord.status === SUBMISSION_STATUS.EVALUATION_PENDING,
       ];
 

@@ -2,6 +2,7 @@ import { SUBMISSION_STATUS } from "@/constants/submissionStatus";
 import { knex } from "@/lib/db";
 import { NextResponse } from "next/server";
 
+//This api is not allowed for hiring manager
 export const GET = async (req, { params }: { params: { jobId: string } }) => {
   const job = await knex("job").where("job_id", params.jobId).first();
 
