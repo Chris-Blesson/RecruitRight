@@ -1,31 +1,21 @@
-import { ACCOUNT_TYPE } from "@/constants/accountTypes";
 import { knex } from "./db";
 
-export const fetchCandidateDetailsForJobAndReduceCredits = async ({
-  jobId,
-  accountId,
-  recruiterAccId,
-}) => {
+export const fetchCandidateDetailsForJob = async ({ jobId, accountId }) => {
   try {
     //Check if recruiter has credits
-    const isSubmissionAvailable = await knex("submissions")
+    const submissionDetails = await knex("submissions")
       .where({
         account_id: accountId,
         job_id: jobId,
       })
       .select(["test_response", "evaluation"])
       .first();
-    if (!isSubmissionAvailable) {
+    if (!submissionDetails) {
       throw new Error("Submission not available");
     }
-    const accountDetails = await knex("accounts")
-      .where({
-        account_id: accountId,
-      })
-      .first();
-    if (!accountDetails) {
-      throw new Error("Account not available");
-    }
+    return {
+      ...submissionDetails,
+    };
   } catch (err) {
     throw err;
   }

@@ -1,7 +1,6 @@
 import { ACCOUNT_TYPE } from "@/constants/accountTypes";
 import { SUBMISSION_STATUS } from "@/constants/submissionStatus";
 import { knex } from "@/lib/db";
-import { message } from "antd";
 import { NextResponse } from "next/server";
 
 //This api is only accessible for recruiters
