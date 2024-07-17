@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 
 export async function GET() {
   //TODO: Get this from authentication email
-  const email = "lp@lp.com";
+  const email = "lokprakash100@gmail.com";
   if (!email) {
     return NextResponse.json(
       {
