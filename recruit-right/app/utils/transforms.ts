@@ -19,7 +19,7 @@ export const transformCandidatePayload = (payload: IResumeData) => {
   return { userId, userValues };
 };
 
-export const transformJobCreationPayload = (payload) => {
+export const transformJobPostingPayload = (payload) => {
   const { contest_date, ...rest } = payload;
   const [start_date_time, end_date_time] = contest_date;
 

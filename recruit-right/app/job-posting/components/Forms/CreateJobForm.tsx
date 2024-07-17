@@ -1,7 +1,6 @@
 "use client";
-import { transformJobCreationPayload } from "@/app/utils/transforms";
-import { Button, Form, Input, Select, message } from "antd";
-import { DatePicker } from "antd";
+import { transformJobPostingPayload } from "@/app/utils/transforms";
+import { Button, Form, Input, Select, message, DatePicker } from "antd";
 import { useState } from "react";
 import QuestionEmptyState from "../Questions/QuestionEmptyState";
 import QuestionsList from "../Questions/QuestionsList";
@@ -11,8 +10,8 @@ const { RangePicker } = DatePicker;
 
 const { Option } = Select;
 
-const CurrencySelector = (
-  <Form.Item name="compensation_currency" noStyle>
+export const CurrencySelector = (
+  <Form.Item initialValue={"USD"} name="compensation_currency" noStyle>
     <Select defaultValue={"USD"} className="min-w-[80px]">
       <Option value="USD">USD</Option>
       <Option value="INR">INR</Option>
@@ -29,7 +28,7 @@ const CreateJobForm = ({ form }) => {
     fetch("/api/job/create", {
       method: "POST",
       body: JSON.stringify({
-        ...transformJobCreationPayload(values),
+        ...transformJobPostingPayload(values),
         questions: {
           questions,
         },
@@ -114,10 +113,7 @@ const CreateJobForm = ({ form }) => {
               <AIPrompt
                 triggerText=""
                 asyncSubmitHandler={async (content) => {
-                  return promptGenerationHandler(
-                    content,
-                    "job_description"
-                  );
+                  return promptGenerationHandler(content, "job_description");
                 }}
               />
             </div>
@@ -168,7 +164,7 @@ const CreateJobForm = ({ form }) => {
           label="Location"
           rules={[{ required: true }]}
         >
-          <Input placeholder="Banglore" />
+          <Input placeholder="Bangalore" />
         </Form.Item>
         <Form.Item className="flex-1 hidden" name="org_id" label="Organisation">
           <Input type="hidden" placeholder="Org_id" />
