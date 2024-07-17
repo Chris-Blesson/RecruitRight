@@ -10,6 +10,7 @@ const CandidateAccountDetails = ({ accountDetails }) => {
 };
 const ViewCandidateDetails = () => {
   //TODO: View Resume PDF
+  //TODO: Add reach out feature
   const [loading, setLoading] = useState(true);
   const { job_id, submission_id, user_id } = useParams();
   const [candidateAccountDetails, setCandidateAccountDetails] = useState(null);
