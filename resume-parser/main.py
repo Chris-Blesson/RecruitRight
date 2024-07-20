@@ -1,11 +1,11 @@
-from fastapi import FastAPI, File, UploadFile
+from fastapi import FastAPI, File, Form, UploadFile
 from docUtils import extractTextFromPdf
 from resumeGenerator import generateJsonResume
 
 app = FastAPI()
 
 @app.post("/parse")
-async def parseResume(file: UploadFile=File(...)):
+async def parseResume( account_id: int = Form(...), file: UploadFile=File(...)):
 
   extractedResumeText = await extractTextFromPdf(file)
   openAiModel="gpt-3.5-turbo"
@@ -15,5 +15,6 @@ async def parseResume(file: UploadFile=File(...)):
 
   print(extractedResumeText)
   
-  return jsonResume;
+  return {"resume_payload": jsonResume, "account_id":account_id};
+
 # python3 -m uvicorn main:app --reload

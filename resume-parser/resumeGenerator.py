@@ -5,10 +5,10 @@ import json
 
 CV_TEXT_PLACEHOLDER = "<CV_TEXT>"
 
-SYSTEM_PROMPT = "You are a smart assistant to career advisors at the Harvard Extension School. You will reply with JSON only."
+SYSTEM_PROMPT = "You are a smart assistant and a smart resume evaluator to career advisors at the Harvard Extension School. You will reply with JSON only."
 
 BASICS_PROMPT = """
-You are going to write a JSON resume section for an applicant applying for job posts.
+You are going to write a JSON resume section for an applicant applying for job posts and provide resume improvement suggestions for this section.
 
 Consider the following CV:
 <CV_TEXT>
@@ -21,13 +21,14 @@ interface Basics {
     phone: string;
     website: string;
     address: string;
+    improvments_suggestions:string[];
 }
 
 Write the basics section according to the Basic schema. On the response, include only the JSON.
 """
 
 EDUCATION_PROMPT = """
-You are going to write a JSON resume section for an applicant applying for job posts.
+You are going to write a JSON resume section for an applicant applying for job posts and provide resume improvement suggestions for this section.
 
 Consider the following CV:
 <CV_TEXT>
@@ -43,6 +44,7 @@ interface EducationItem {
     endDate: string;
     score: string;
     location: string;
+    improvments_suggestions:string[];
 }
 
 interface Education {
@@ -54,7 +56,7 @@ Write the education section according to the Education schema. On the response, 
 """
 
 AWARDS_PROMPT = """
-You are going to write a JSON resume section for an applicant applying for job posts.
+You are going to write a JSON resume section for an applicant applying for job posts and provide resume improvement suggestions for this section.
 
 Consider the following CV:
 <CV_TEXT>
@@ -76,7 +78,7 @@ Write the awards section according to the Awards schema. Include only the awards
 """
 
 PROJECTS_PROMPT = """
-You are going to write a JSON resume section for an applicant applying for job posts.
+You are going to write a JSON resume section for an applicant applying for job posts and provide resume improvement suggestions for this section.
 
 Consider the following CV:
 <CV_TEXT>
@@ -88,6 +90,7 @@ interface ProjectItem {
     description: string;
     keywords: string[];
     url: string;
+    improvments_suggestions:string[];
 }
 
 interface Projects {
@@ -98,7 +101,7 @@ Write the projects section according to the Projects schema. Include all project
 """
 
 SKILLS_PROMPT = """
-You are going to write a JSON resume section for an applicant applying for job posts.
+You are going to write a JSON resume section for an applicant applying for job posts and provide resume improvement suggestions for this section.
 
 Consider the following CV:
 <CV_TEXT>
@@ -112,6 +115,7 @@ Now consider the following TypeScript Interface for the JSON schema:
 interface SkillItem {
     name: HardSkills | SoftSkills | OtherSkills;
     keywords: string[];
+    improvments_suggestions:string[];
 }
 
 interface Skills {
@@ -122,7 +126,7 @@ Write the skills section according to the Skills schema. Include only up to the 
 """
 
 WORK_PROMPT = """
-You are going to write a JSON resume section for an applicant applying for job posts.
+You are going to write a JSON resume section for an applicant applying for job posts and provide resume improvement suggestions for this section.
 
 Consider the following CV:
 <CV_TEXT>
@@ -136,6 +140,7 @@ interface WorkItem {
     endDate: string;
     location: string;
     highlights: string[];
+    improvments_suggestions:string[];
 }
 
 interface Work {
