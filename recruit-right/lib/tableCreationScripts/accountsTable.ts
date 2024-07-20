@@ -9,7 +9,8 @@ export const CreateAccountTable = async () => {
         resume_url varchar(128),
         resume_payload json,
         organisation varchar(128),
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+        resume_evaluation json
     );`);
   await knex.raw(
     "CREATE INDEX account_id_idx ON public.accounts (account_id);"

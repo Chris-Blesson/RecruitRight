@@ -1,3 +1,4 @@
+import { PROCESS_TYPE } from "@/constants/processTypes";
 import { RESUME_PARSER_STATUS } from "@/constants/resumeParserStatus";
 import { knex } from "@/lib/db";
 import { NextResponse } from "next/server";
@@ -20,7 +21,11 @@ export async function POST(req: any) {
     //If there exist an in-progress process of type resume_parse, delete it
     //Else, do no operation
     const deletedRows = await knex("process")
-      .where({ process_id: processId })
+      .where({
+        process_id: processId,
+        process_type: PROCESS_TYPE.RESUME_PARSE,
+        status: RESUME_PARSER_STATUS.IN_PROGRESS,
+      })
       .andWhere("status", RESUME_PARSER_STATUS.IN_PROGRESS)
       .del();
     console.log("[parse success] Row deleted", deletedRows);
@@ -42,6 +47,7 @@ export async function POST(req: any) {
         resume_payload: resumePayload,
       });
     console.log("[parse success] account updated", updatedAccount);
+
     return NextResponse.json({
       message: "success",
     });
