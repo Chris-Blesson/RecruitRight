@@ -1,12 +1,10 @@
 // Ref: https://dev.to/xhowais/nextjs-file-upload-api-documentation-3863
 import { NextResponse } from "next/server";
-import { writeFile } from "fs/promises";
-import path from "path";
 import { entityIdGenerator } from "@/lib/entityIdGenerator";
 import { RESUME_PARSER_STATUS } from "@/constants/resumeParserStatus";
 import { PROCESS_TYPE } from "@/constants/processTypes";
 import { knex } from "@/lib/db";
-import fs from "fs";
+import { put, del } from "@vercel/blob";
 /**
  *
  * This function is for uploading the resume
@@ -27,13 +25,6 @@ export async function POST(req: Request) {
       { status: 400 }
     );
   }
-
-  //@ts-ignore
-  const buffer = Buffer.from(await file.arrayBuffer());
-
-  // Replace spaces in the file name with underscores
-  //@ts-ignore
-  const filename = file.name.replaceAll(" ", "_");
 
   try {
     // Write the file to the specified directory (public/assets) with the modified filename
@@ -68,10 +59,6 @@ export async function POST(req: Request) {
     const trxProvider = knex.transactionProvider();
     const trx = await trxProvider();
 
-    const filePath = path.join(
-      process.cwd(),
-      "/public/generated-pdf/resumes/" + accountId + ".pdf"
-    );
     //Generate the process id
     //Create a record for the process
     //Call the resume-parser api
@@ -79,15 +66,30 @@ export async function POST(req: Request) {
       //Generate the process id
       const processId = entityIdGenerator("process");
 
-      await writeFile(filePath, buffer);
-      console.log(">>>File created successfully", accountId);
+      const accountDetails = await knex("accounts")
+        .where({
+          account_id: accountId,
+        })
+        .select("resume_url")
+        .first();
+
+      if (accountDetails.resume_url) {
+        await del(accountDetails.resume_url, {
+          token: process.env.NEXT_BLOB_STORAGE_KEY,
+        });
+      }
+      const data = await put(`${accountId}.pdf`, file, {
+        access: "public",
+        contentType: "application/pdf",
+        token: process.env.NEXT_BLOB_STORAGE_KEY,
+      });
+      console.log(">>>File created successfully", data);
 
       //TODO: Update the resume url in accounts table
-      await knex("accounts")
-        .where("account_id", accountId)
-        .update({
-          resume_url: `/generated-pdf/resumes/${accountId}.pdf`,
-        });
+      await knex("accounts").where("account_id", accountId).update({
+        resume_url: data.url,
+      });
+
       //Insert the process to table
       await knex("process").insert({
         account_id: accountId,
@@ -95,6 +97,7 @@ export async function POST(req: Request) {
         status: RESUME_PARSER_STATUS.IN_PROGRESS,
         process_type: PROCESS_TYPE.RESUME_PARSE,
       });
+
       console.log("Process ID", processId);
       //TODO: Create parsing job fastapi
       await trx.commit();
@@ -102,7 +105,6 @@ export async function POST(req: Request) {
     } catch (err) {
       console.log("[RESUME_UPLOAD]Error in the transaction", err);
       await trx.rollback();
-      await fs.unlink(filePath, () => {});
       throw err;
     }
   } catch (error) {
