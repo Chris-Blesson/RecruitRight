@@ -13,16 +13,17 @@ import {
   Space,
 } from "antd";
 import { useEffect, useState } from "react";
-import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
+import { EditOutlined, DeleteOutlined, BulbOutlined } from "@ant-design/icons";
+import Suggestions from "./Suggestions";
 const ReadOnlyViewCollapsibleContent = ({ name, keywords }) => {
   return (
     <>
-      <div>
-        <p>Category</p>
+      <div className="mb-2">
+        <h2 className="font-bold text-lg">Category</h2>
         <p>{name}</p>
       </div>
       <div>
-        <p>Skills/Tools known</p>
+        <h2 className="font-bold text-lg">Skills/Tools known</h2>
         <p>{keywords.join()}</p>
       </div>
     </>
@@ -298,8 +299,20 @@ const Skills = () => {
     });
   };
   const EditOrDeleteSkills = ({ idx }) => {
+    const [isSuggestionsModalOpen, setIsSuggestionModalOpen] = useState(false);
     return (
       <div className="flex items-center">
+        {!!skillsDetails?.[idx]?.["improvments_suggestions"]?.length && (
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              setIsSuggestionModalOpen(true);
+            }}
+            className="mr-4"
+          >
+            <BulbOutlined />
+          </button>
+        )}
         <button
           className="mr-4"
           onClick={(e) => {
@@ -311,6 +324,21 @@ const Skills = () => {
           <EditOutlined />
         </button>
         <PopConfirmDelete idx={idx} deleteSkills={deleteSkills} />
+        <Modal
+          open={isSuggestionsModalOpen}
+          cancelText="Done"
+          onOk={() => {
+            setIsSuggestionModalOpen(false);
+          }}
+          onCancel={() => {
+            setIsSuggestionModalOpen(false);
+          }}
+          closable={false}
+        >
+          <Suggestions
+            suggestions={skillsDetails?.[idx]?.["improvments_suggestions"]}
+          />
+        </Modal>
       </div>
     );
   };
@@ -335,7 +363,7 @@ const Skills = () => {
     <>
       <div>
         <div className="flex justify-between items-center mb-2">
-          <h3>Basic Information</h3>
+          <h3>Skills</h3>
           <div>
             <Button
               type="primary"

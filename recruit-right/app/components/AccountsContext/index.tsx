@@ -25,6 +25,7 @@ const defaultAccountDetails = {
         website: null,
         address: null,
         phone: null,
+        improvments_suggestions: null,
       },
     },
     education: [],

@@ -7,7 +7,10 @@ import { useUser } from "@clerk/nextjs";
 import { ACCOUNT_TYPE } from "@/constants/accountTypes";
 type FileType = Parameters<GetProp<UploadProps, "beforeUpload">>[0];
 
-const ResumeUploader = () => {
+const ResumeUploader = ({
+  withCreateAccount = true,
+  onSuccess = () => null,
+}) => {
   const [uploadedResume, setUploadedResume] = useState<RcFile>();
   const [loading, setLoading] = useState(false);
   const [isResumeUploaded, setIsResumeUploaded] = useState(false);
@@ -28,31 +31,51 @@ const ResumeUploader = () => {
     formData.append("file", uploadedResume as FileType);
     setLoading(true);
 
-    fetch("/api/accounts/create", {
-      method: "POST",
-      body: JSON.stringify(requestBody),
-    })
-      .then((res) => {
-        return res.json();
+    if (withCreateAccount) {
+      fetch("/api/accounts/create", {
+        method: "POST",
+        body: JSON.stringify(requestBody),
       })
-      .then(() => {
-        fetch("/api/resume/upload", {
-          method: "POST",
-          body: formData,
+        .then((res) => {
+          return res.json();
         })
-          .then(() => {
-            message.success("Resume is safe with us!");
-            setIsResumeUploaded(true);
-            window?.location?.reload();
+        .then(() => {
+          fetch("/api/resume/upload", {
+            method: "POST",
+            body: formData,
           })
-          .catch((err) => {
-            message.error("Something went wrong while uploading the resume");
-            console.log("error", err);
-          })
-          .finally(() => {
-            setLoading(false);
-          });
-      });
+            .then(() => {
+              message.success("Resume is safe with us!");
+              setIsResumeUploaded(true);
+              onSuccess?.();
+              window?.location?.reload();
+            })
+            .catch((err) => {
+              message.error("Something went wrong while uploading the resume");
+              console.log("error", err);
+            })
+            .finally(() => {
+              setLoading(false);
+            });
+        });
+    } else {
+      fetch("/api/resume/upload", {
+        method: "POST",
+        body: formData,
+      })
+        .then(() => {
+          message.success("Resume is safe with us!");
+          setIsResumeUploaded(true);
+          onSuccess?.();
+        })
+        .catch((err) => {
+          message.error("Something went wrong while uploading the resume");
+          console.log("error", err);
+        })
+        .finally(() => {
+          setLoading(false);
+        });
+    }
   };
 
   return (
@@ -71,9 +94,7 @@ const ResumeUploader = () => {
           disabled={!uploadedResume || loading || isResumeUploaded}
           loading={loading || isResumeUploaded}
         >
-          {!isResumeUploaded
-            ? "Start Your Journey!"
-            : "Starting your journey..."}
+          {!isResumeUploaded ? "Submit" : "Done"}
         </Button>
       </div>
     </>
