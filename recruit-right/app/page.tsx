@@ -1,5 +1,6 @@
-import ResumeUploader from "./components/ResumeUpload";
+import { redirect } from "next/navigation";
 
-export default function Home() {
-  return <ResumeUploader />;
+export default async function Home() {
+  redirect("/jobs");
+  return null;
 }

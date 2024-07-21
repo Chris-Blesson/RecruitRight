@@ -1,6 +1,7 @@
 import { ACCOUNT_TYPE } from "@/constants/accountTypes";
 import { knex } from "@/lib/db";
 import { entityIdGenerator } from "@/lib/entityIdGenerator";
+import { currentUser } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
@@ -16,8 +17,9 @@ export async function POST(req: Request) {
     );
   }
   const accountId = entityIdGenerator("account");
-  //TODO: get email from authentication
-  const email = "lp@lp.com";
+  const user = await currentUser();
+
+  const email = user?.primaryEmailAddress?.emailAddress;
   const { name, type, organisation } = requestBody;
   if (!type) {
     return NextResponse.json(
@@ -58,6 +60,7 @@ export async function POST(req: Request) {
         email,
         name,
         type,
+        organisation,
       })
       .returning("*");
     return NextResponse.json({
