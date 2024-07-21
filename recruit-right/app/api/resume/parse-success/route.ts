@@ -7,11 +7,11 @@ export async function POST(req: any) {
   try {
     const requestBody = await req.json();
     console.log("requestBody", requestBody);
-    const { resumePayload, accountId } = requestBody;
-    if (!resumePayload || !accountId) {
+    const { resumePayload, account_id } = requestBody;
+    if (!resumePayload || !account_id) {
       return NextResponse.json(
         {
-          message: "processId or resumePayload or accountId is missing",
+          message: "resumePayload or accountId is missing",
         },
         {
           status: 400,
@@ -22,7 +22,7 @@ export async function POST(req: any) {
     //Else, do no operation
     const deletedRows = await knex("process")
       .where({
-        account_id: accountId,
+        account_id,
         process_type: PROCESS_TYPE.RESUME_PARSE,
         status: RESUME_PARSER_STATUS.IN_PROGRESS,
       })
@@ -42,7 +42,7 @@ export async function POST(req: any) {
     }
     //Update the accounts table with the resume payload
     const updatedAccount = await knex("accounts")
-      .where("account_id", accountId)
+      .where("account_id", account_id)
       .update({
         resume_payload: resumePayload,
       });
