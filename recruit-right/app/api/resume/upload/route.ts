@@ -5,6 +5,7 @@ import { RESUME_PARSER_STATUS } from "@/constants/resumeParserStatus";
 import { PROCESS_TYPE } from "@/constants/processTypes";
 import { knex } from "@/lib/db";
 import { put, del } from "@vercel/blob";
+import { currentUser } from "@clerk/nextjs/server";
 /**
  *
  * This function is for uploading the resume
@@ -27,11 +28,14 @@ export async function POST(req: Request) {
   }
 
   try {
-    // Write the file to the specified directory (public/assets) with the modified filename
-
-    //TODO: Get acc id from the header
-    const accountId = "1";
-
+    const user = await currentUser();
+    const email = user?.primaryEmailAddress?.emailAddress;
+    const accountDetails = await knex("accounts")
+      .where({
+        email,
+      })
+      .first();
+    const accountId = accountDetails?.account_id;
     //Check if there is an in-progress resume-parse job
     const inProgressJob = await knex("process")
       .where("account_id", accountId)
@@ -66,29 +70,22 @@ export async function POST(req: Request) {
       //Generate the process id
       const processId = entityIdGenerator("process");
 
-      const accountDetails = await knex("accounts")
-        .where({
-          account_id: accountId,
-        })
-        .select("resume_url")
-        .first();
-
-      if (accountDetails.resume_url) {
-        await del(accountDetails.resume_url, {
-          token: process.env.NEXT_BLOB_STORAGE_KEY,
-        });
-      }
-      const data = await put(`${accountId}.pdf`, file, {
-        access: "public",
-        contentType: "application/pdf",
-        token: process.env.NEXT_BLOB_STORAGE_KEY,
-      });
-      console.log(">>>File created successfully", data);
+      // if (accountDetails.resume_url) {
+      //   await del(accountDetails.resume_url, {
+      //     token: process.env.NEXT_BLOB_STORAGE_KEY,
+      //   });
+      // }
+      // const data = await put(`${accountId}.pdf`, file, {
+      //   access: "public",
+      //   contentType: "application/pdf",
+      //   token: process.env.NEXT_BLOB_STORAGE_KEY,
+      // });
+      // console.log(">>>File created successfully", data);
 
       //TODO: Update the resume url in accounts table
-      await knex("accounts").where("account_id", accountId).update({
-        resume_url: data.url,
-      });
+      // await knex("accounts").where("account_id", accountId).update({
+      //   resume_url: data.url,
+      // });
 
       //Insert the process to table
       await knex("process").insert({
@@ -98,8 +95,19 @@ export async function POST(req: Request) {
         process_type: PROCESS_TYPE.RESUME_PARSE,
       });
 
-      console.log("Process ID", processId);
       //TODO: Create parsing job fastapi
+      fetch(`${process.env.NEXT_PYTHON_SERVICE_URL}/parse`, {
+        method: "POST",
+        body: JSON.stringify({
+          account_id: accountId,
+          pdf_url:
+            "https://apdnwfr8uukus58w.public.blob.vercel-storage.com/account_f0a_1721547543900-oWi4dCSeo9XDcdvFBXE5LgXSSxibfe.pdf",
+        }),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
       await trx.commit();
       return NextResponse.json({ message: "Success" });
     } catch (err) {

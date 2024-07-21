@@ -1,23 +1,25 @@
 "use client";
 import { useAccountsContext } from "@/app/components/AccountsContext";
-import { Button, Form, Input, message, Space } from "antd";
+import { Button, Form, Input, message, Modal, Space } from "antd";
 import { useState } from "react";
-
+import { BulbOutlined } from "@ant-design/icons";
+import Suggestions from "./Suggestions";
 const ReadOnlyView = ({ label, value }) => {
   return (
-    <div>
-      <p>{label}</p>
-      <p>{value}</p>
+    <div className="mb-2">
+      <h2 className="text-lg font-bold">{label}</h2>
+      <p className="text-base text-gray-600">{value}</p>
     </div>
   );
 };
+
 const BasicInformation = () => {
   const { accountDetails, accountContextLoading, updateAccountDetails } =
     useAccountsContext();
   const [readOnlyMode, setReadOnlyMode] = useState(true);
   const [form] = Form.useForm();
+  const [isSuggestionsModalOpen, setIsSuggestionModalOpen] = useState(false);
 
-  //TODO: Remove this Basics
   const basicInformation = accountDetails?.resume_payload?.basics?.Basics;
   if (!basicInformation) {
     return <p>Not available yet</p>;
@@ -92,16 +94,25 @@ const BasicInformation = () => {
   return (
     <div>
       <div className="flex items-center justify-between mb-2">
-        <h3>Basic Information</h3>
+        <h3 className="text-lg font-bold">Basic Information</h3>
         {readOnlyMode && (
-          <Button
-            type="text"
-            onClick={() => {
-              setReadOnlyMode(!readOnlyMode);
-            }}
-          >
-            Edit
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button
+              onClick={() => {
+                setIsSuggestionModalOpen(true);
+              }}
+            >
+              <BulbOutlined />
+            </Button>
+            <Button
+              type="primary"
+              onClick={() => {
+                setReadOnlyMode(!readOnlyMode);
+              }}
+            >
+              Edit
+            </Button>
+          </div>
         )}
       </div>
       <hr className="mb-4" />
@@ -166,6 +177,19 @@ const BasicInformation = () => {
           </>
         )}
       </div>
+      <Modal
+        open={isSuggestionsModalOpen}
+        closable={false}
+        onOk={() => {
+          setIsSuggestionModalOpen(false);
+        }}
+        cancelText="Done"
+        onCancel={() => {
+          setIsSuggestionModalOpen(false);
+        }}
+      >
+        <Suggestions suggestions={basicInformation.improvments_suggestions} />
+      </Modal>
     </div>
   );
 };

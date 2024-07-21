@@ -11,7 +11,8 @@ import {
   Space,
 } from "antd";
 import { useEffect, useState } from "react";
-import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
+import { EditOutlined, DeleteOutlined, BulbOutlined } from "@ant-design/icons";
+import Suggestions from "./Suggestions";
 const ReadOnlyViewCollapsibleContent = ({
   institution,
   area,
@@ -22,28 +23,28 @@ const ReadOnlyViewCollapsibleContent = ({
 }) => {
   return (
     <>
-      <div>
-        <p>Institution</p>
+      <div className="mb-2">
+        <h2 className="font-bold text-lg">Institution</h2>
         <p>{institution}</p>
       </div>
-      <div>
-        <p>Area</p>
+      <div className="mb-2">
+        <h2 className="font-bold text-lg">Area</h2>
         <p>{area}</p>
       </div>
-      <div>
-        <p>Study Type</p>
+      <div className="mb-2">
+        <h2 className="font-bold text-lg">Study Type</h2>
         <p>{studyType || "NA"}</p>
       </div>
-      <div>
-        <p>From</p>
+      <div className="mb-2">
+        <h2 className="font-bold text-lg">From</h2>
         <p>{startDate || "NA"}</p>
       </div>
-      <div>
-        <p>Till</p>
+      <div className="mb-2">
+        <h2 className="font-bold text-lg">Till</h2>
         <p>{endDate || "NA"}</p>
       </div>
-      <div>
-        <p>Location</p>
+      <div className="mb-2">
+        <h2 className="font-bold text-lg">Location</h2>
         <p>{location}</p>
       </div>
     </>
@@ -378,8 +379,21 @@ const Education = () => {
     });
   };
   const EditOrDeleteEducation = ({ idx }) => {
+    const [isSuggestionsModalOpen, setIsSuggestionModalOpen] = useState(false);
+
     return (
       <div className="flex items-center">
+        {!!educationDetails?.[idx]?.["improvments_suggestions"]?.length && (
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              setIsSuggestionModalOpen(true);
+            }}
+            className="mr-4"
+          >
+            <BulbOutlined />
+          </button>
+        )}
         <button
           className="mr-4"
           onClick={(e) => {
@@ -394,6 +408,21 @@ const Education = () => {
           idx={idx}
           deleteEducationInformation={deleteEducationInformation}
         />
+        <Modal
+          open={isSuggestionsModalOpen}
+          cancelText="Done"
+          onOk={() => {
+            setIsSuggestionModalOpen(false);
+          }}
+          onCancel={() => {
+            setIsSuggestionModalOpen(false);
+          }}
+          closable={false}
+        >
+          <Suggestions
+            suggestions={educationDetails?.[idx]?.["improvments_suggestions"]}
+          />
+        </Modal>
       </div>
     );
   };
@@ -420,7 +449,7 @@ const Education = () => {
     <>
       <div>
         <div className="flex justify-between items-center mb-2">
-          <h3>Basic Information</h3>
+          <h3>Education</h3>
           <div>
             <Button
               type="primary"

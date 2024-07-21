@@ -25,6 +25,7 @@ const defaultAccountDetails = {
         website: null,
         address: null,
         phone: null,
+        improvments_suggestions: null,
       },
     },
     education: [],
@@ -43,6 +44,7 @@ const AccountsContext = createContext({
   refetchAccountDetails: () => {},
   updateAccountDetails: (updateAccountPayload, { onSuccess, onError }) => {},
   updateAccountLoading: false,
+  changeSidebarView: ({ open }: { open: boolean }) => {},
 });
 
 export const useAccountsContext = () => {
@@ -61,6 +63,7 @@ const AccountsContextProvider = ({ children }: { children: any }) => {
   const [spinning, setSpinning] = useState(false);
   const [percent, setPercent] = useState(0);
 
+  const [showSidebar, setShowSidebar] = useState(true);
   const [updateAccountLoading, setUpdateAccountLoading] = useState(false);
 
   const fetchAccountDetails = useCallback(async () => {
@@ -144,6 +147,10 @@ const AccountsContextProvider = ({ children }: { children: any }) => {
       }
     }, 100);
   };
+
+  const changeSidebarView = ({ open }) => {
+    setShowSidebar(open);
+  };
   useEffect(() => {
     fetchAccountDetails();
   }, []);
@@ -153,7 +160,6 @@ const AccountsContextProvider = ({ children }: { children: any }) => {
       showLoader();
     }
   }, [accountPayload?.loading]);
-  console.log("account details", accountPayload);
 
   if (accountPayload?.loading) {
     return <Spin spinning={spinning} percent={percent} fullscreen />;
@@ -161,6 +167,7 @@ const AccountsContextProvider = ({ children }: { children: any }) => {
   if (!accountPayload.data) {
     return <OnboardingForm />;
   }
+
   return (
     <AccountsContext.Provider
       value={{
@@ -170,13 +177,14 @@ const AccountsContextProvider = ({ children }: { children: any }) => {
         refetchAccountDetails: fetchAccountDetails,
         updateAccountDetails,
         updateAccountLoading,
+        changeSidebarView,
       }}
     >
       <Layout hasSider>
-        <Sidebar />
+        {showSidebar && <Sidebar />}
         <Layout
           style={{
-            marginLeft: 200,
+            marginLeft: showSidebar ? 200 : 0,
             height: "100vh",
             backgroundColor: "#f0f0f0",
             color: "#1f1f1f",

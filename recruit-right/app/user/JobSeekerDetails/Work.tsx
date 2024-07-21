@@ -13,7 +13,8 @@ import {
   Space,
 } from "antd";
 import { useEffect, useState } from "react";
-import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
+import { EditOutlined, DeleteOutlined, BulbOutlined } from "@ant-design/icons";
+import Suggestions from "./Suggestions";
 const ReadOnlyViewCollapsibleContent = ({
   company,
   position,
@@ -24,28 +25,28 @@ const ReadOnlyViewCollapsibleContent = ({
 }) => {
   return (
     <>
-      <div>
-        <p>Company</p>
+      <div className="mb-2">
+        <h2 className="text-lg font-bold">Company</h2>
         <p>{company}</p>
       </div>
-      <div>
-        <p>Position</p>
+      <div className="mb-2">
+        <h2 className="text-lg font-bold">Position</h2>
         <p>{position}</p>
       </div>
-      <div>
-        <p>Location</p>
+      <div className="mb-2">
+        <h2 className="text-lg font-bold">Location</h2>
         <p>{location}</p>
       </div>
-      <div>
-        <p>From</p>
+      <div className="mb-2">
+        <h2 className="text-lg font-bold">From</h2>
         <p>{startDate || "NA"}</p>
       </div>
-      <div>
-        <p>Till</p>
+      <div className="mb-2">
+        <h2 className="text-lg font-bold">Till</h2>
         <p>{endDate || "NA"}</p>
       </div>
-      <div>
-        <p>Highlights</p>
+      <div className="mb-2">
+        <h2 className="text-lg font-bold">Highlights</h2>
         <p>{highlights?.join()}</p>
       </div>
     </>
@@ -346,6 +347,7 @@ const Work = () => {
 
   const [editIndex, setEditIndex] = useState(null);
   const [editModalOpen, setEditModalOpen] = useState(false);
+
   const [workExperience, setWorkExperience] = useState(
     accountDetails?.resume_payload?.work || []
   );
@@ -353,6 +355,7 @@ const Work = () => {
   useEffect(() => {
     setWorkExperience(accountDetails?.resume_payload?.work);
   }, [accountDetails]);
+
   if (!workExperience?.length) {
     return <p>Not available yet</p>;
   }
@@ -380,8 +383,20 @@ const Work = () => {
     });
   };
   const EditOrDeleteWorkExperience = ({ idx }) => {
+    console.log("work exp", workExperience[idx]);
+    const [isSuggestionsModalOpen, setIsSuggestionModalOpen] = useState(false);
+
     return (
       <div className="flex items-center">
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            setIsSuggestionModalOpen(true);
+          }}
+          className="mr-4"
+        >
+          <BulbOutlined />
+        </button>
         <button
           className="mr-4"
           onClick={(e) => {
@@ -396,6 +411,21 @@ const Work = () => {
           idx={idx}
           deleteWorkExperience={deleteWorkExperience}
         />
+        <Modal
+          open={isSuggestionsModalOpen}
+          cancelText="Done"
+          onOk={() => {
+            setIsSuggestionModalOpen(false);
+          }}
+          onCancel={() => {
+            setIsSuggestionModalOpen(false);
+          }}
+          closable={false}
+        >
+          <Suggestions
+            suggestions={workExperience?.[idx]?.["improvements_suggestions"]}
+          />
+        </Modal>
       </div>
     );
   };
@@ -422,8 +452,8 @@ const Work = () => {
     <>
       <div>
         <div className="flex justify-between items-center mb-2">
-          <h3>Basic Information</h3>
-          <div>
+          <h3>Work</h3>
+          <div className="flex items-center gap-2">
             <Button
               type="primary"
               onClick={() => {

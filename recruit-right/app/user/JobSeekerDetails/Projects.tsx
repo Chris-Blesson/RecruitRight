@@ -13,30 +13,30 @@ import {
   Space,
 } from "antd";
 import { useEffect, useState } from "react";
-import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
+import { EditOutlined, DeleteOutlined, BulbOutlined } from "@ant-design/icons";
+import Suggestions from "./Suggestions";
 const ReadOnlyViewCollapsibleContent = ({
   name,
   description,
   keywords,
   url,
 }) => {
-  console.log("");
   return (
     <>
-      <div>
-        <p>Name</p>
+      <div className="mb-2">
+        <h2 className="font-bold text-lg">Name</h2>
         <p>{name}</p>
       </div>
-      <div>
-        <p>Description</p>
+      <div className="mb-2">
+        <h2 className="font-bold text-lg">Description</h2>
         <p>{description}</p>
       </div>
-      <div>
-        <p>Skills/Tools used</p>
+      <div className="mb-2">
+        <h2 className="font-bold text-lg">Skills/Tools used</h2>
         <p>{keywords?.join()}</p>
       </div>
-      <div>
-        <p>Live URL</p>
+      <div className="mb-2">
+        <h2 className="font-bold text-lg">Live URL</h2>
         <p>{url || "NA"}</p>
       </div>
     </>
@@ -342,8 +342,20 @@ const Projects = () => {
     });
   };
   const EditOrDeleteProject = ({ idx }) => {
+    const [isSuggestionsModalOpen, setIsSuggestionModalOpen] = useState(false);
     return (
       <div className="flex items-center">
+        {!!projects?.[idx]?.["improvements_suggestions"]?.length && (
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              setIsSuggestionModalOpen(true);
+            }}
+            className="mr-4"
+          >
+            <BulbOutlined />
+          </button>
+        )}
         <button
           className="mr-4"
           onClick={(e) => {
@@ -355,6 +367,21 @@ const Projects = () => {
           <EditOutlined />
         </button>
         <PopConfirmDelete idx={idx} deleteProject={deleteProject} />
+        <Modal
+          open={isSuggestionsModalOpen}
+          cancelText="Done"
+          onOk={() => {
+            setIsSuggestionModalOpen(false);
+          }}
+          onCancel={() => {
+            setIsSuggestionModalOpen(false);
+          }}
+          closable={false}
+        >
+          <Suggestions
+            suggestions={projects?.[idx]?.["improvements_suggestions"]}
+          />
+        </Modal>
       </div>
     );
   };
@@ -379,7 +406,7 @@ const Projects = () => {
     <>
       <div>
         <div className="flex justify-between items-center mb-2">
-          <h3>Basic Information</h3>
+          <h3>Projects</h3>
           <div>
             <Button
               type="primary"

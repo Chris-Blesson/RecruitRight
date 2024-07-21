@@ -1,6 +1,7 @@
 import { SUBMISSION_STATUS } from "@/constants/submissionStatus";
 import { knex } from "@/lib/db";
 import { entityIdGenerator } from "@/lib/entityIdGenerator";
+import { getAccountDetails } from "@/lib/getAccountDetails";
 import { NextResponse } from "next/server";
 
 export const POST = async (req) => {
@@ -20,8 +21,16 @@ export const POST = async (req) => {
   const trx = await trxProvider();
 
   try {
-    //TODO: Get the accid from auth
-    const accountId = "1";
+    const accountDetails = await getAccountDetails();
+    const accountId = accountDetails?.account_id;
+    if (!accountId) {
+      return NextResponse.json(
+        {
+          message: "Unauthorized",
+        },
+        { status: 403 }
+      );
+    }
     const job = await knex("job").where("job_id", jobId).first();
     const isJobAvailable = !!job;
     if (!isJobAvailable) {
@@ -39,11 +48,7 @@ export const POST = async (req) => {
     const submissionRecord = await knex("submissions")
       .where({
         job_id: jobId,
-      })
-      .andWhere({
         account_id: accountId,
-      })
-      .andWhere({
         status: SUBMISSION_STATUS.IN_PROGRESS,
       })
       .select("submission_id")
@@ -79,6 +84,7 @@ export const POST = async (req) => {
       status: SUBMISSION_STATUS.IN_PROGRESS,
     };
 
+    console.log("create submission payload", createSubmissionPayload);
     await knex("submissions").insert({ ...createSubmissionPayload });
     await trx.commit();
     return NextResponse.json(
