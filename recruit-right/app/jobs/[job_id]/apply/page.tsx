@@ -11,15 +11,21 @@ import Timer from "./Timer";
 import AutoSave from "./AutoSave";
 import ApplicationQuestion from "./ApplicationQuestion";
 import ApplicationAnswer from "./ApplicationAnswer";
+import { getAccountDetails } from "@/lib/getAccountDetails";
+import { ACCOUNT_TYPE } from "@/constants/accountTypes";
 
 //This page is accessible only for Candidates
 const JobApplyPage = async ({ params }: { params: { job_id: string } }) => {
   const jobId = params.job_id;
   try {
+    const accountDetails = await getAccountDetails();
+    const isJobSeeker = ACCOUNT_TYPE.JOB_SEEKER === accountDetails?.type;
+    if (!isJobSeeker) {
+      return notFound();
+    }
     const startContestDetails = await startApplicationTest({
       jobId,
     });
-    console.log("startContestDetails", startContestDetails);
     const isContestAlreadyEnded =
       startContestDetails?.message === "Application already submitted";
     if (isContestAlreadyEnded) {

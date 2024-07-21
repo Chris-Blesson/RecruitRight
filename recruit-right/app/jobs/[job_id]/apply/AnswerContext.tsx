@@ -1,7 +1,7 @@
 "use client";
-import { Button, message, Modal } from "antd";
-
-import Link from "next/link";
+import { useAccountsContext } from "@/app/components/AccountsContext";
+import { message } from "antd";
+import { useRouter } from "next/navigation";
 import {
   createContext,
   useCallback,
@@ -32,9 +32,9 @@ const AnswerContextProvider = ({ children, jobId }) => {
    */
   const [answer, setAnswer] = useState({});
   const [isInitialAnswerFetching, setIsInitialAnswerFetching] = useState(false);
+  const { changeSidebarView } = useAccountsContext();
   const [submitted, setSubmitted] = useState(false);
-  const [isSubmissionModalOpen, setIsSubmissionModalOpen] = useState(false);
-
+  const router = useRouter();
   const onSaveHandler = useCallback(
     async (onSaveNotification?: (response: any) => void) => {
       const requestBody = {
@@ -61,7 +61,6 @@ const AnswerContextProvider = ({ children, jobId }) => {
 
   const onSubmissionEndHandler = useCallback(
     (onContestEndNotification?: (response: any) => void) => {
-      setIsSubmissionModalOpen(true);
       const requestBody = {
         jobId,
         testResponse: answer,
@@ -72,6 +71,11 @@ const AnswerContextProvider = ({ children, jobId }) => {
       })
         .then((response) => {
           onContestEndNotification?.(response);
+          message.success("Please wait while we redirect to jobs page");
+          setTimeout(() => {
+            router.replace("/jobs");
+            changeSidebarView({ open: true });
+          }, 1000);
         })
         .catch((err) => {
           message.error(
@@ -79,9 +83,6 @@ const AnswerContextProvider = ({ children, jobId }) => {
           );
           console.log("error in answer context", err);
           throw new Error("Error in answer context");
-        })
-        .finally(() => {
-          setIsSubmissionModalOpen(false);
         });
     },
     [answer]
@@ -121,37 +122,6 @@ const AnswerContextProvider = ({ children, jobId }) => {
       }}
     >
       {children}
-      <Modal
-        closable={false}
-        closeIcon={<></>}
-        footer={<></>}
-        open={isSubmissionModalOpen}
-      >
-        <>
-          {submitted ? (
-            <p className="text-md">
-              You have successfully completed the contest
-            </p>
-          ) : (
-            <p className="text-md">
-              Your answers are being evaluated... You can view the status of the
-              submission in your profile page
-            </p>
-          )}
-          <Link href={"/contests"}>
-            <Button
-              color="primary"
-              onClick={() => {
-                setIsSubmissionModalOpen(false);
-              }}
-              loading={!submitted}
-              disabled={!submitted}
-            >
-              View my profile
-            </Button>
-          </Link>
-        </>
-      </Modal>
     </AnswerContext.Provider>
   );
 };

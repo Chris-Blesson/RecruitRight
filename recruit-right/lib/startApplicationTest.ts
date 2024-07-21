@@ -1,6 +1,7 @@
 import { SUBMISSION_STATUS } from "@/constants/submissionStatus";
 import { knex } from "@/lib/db";
 import { entityIdGenerator } from "@/lib/entityIdGenerator";
+import { getAccountDetails } from "./getAccountDetails";
 
 export const startApplicationTest = async ({ jobId }) => {
   if (!jobId) {
@@ -10,8 +11,8 @@ export const startApplicationTest = async ({ jobId }) => {
   const trx = await trxProvider();
 
   try {
-    //TODO: Get the accid from auth
-    const accountId = "1";
+    const accountDetails = await getAccountDetails();
+    const accountId = accountDetails?.account_id;
     const job = await knex("job").where("job_id", jobId).first();
 
     const isJobAvailable = !!job;

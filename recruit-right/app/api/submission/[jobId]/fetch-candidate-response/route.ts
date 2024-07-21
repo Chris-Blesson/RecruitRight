@@ -1,6 +1,7 @@
 import { ACCOUNT_TYPE } from "@/constants/accountTypes";
 import { SUBMISSION_STATUS } from "@/constants/submissionStatus";
 import { knex } from "@/lib/db";
+import { getAccountDetails } from "@/lib/getAccountDetails";
 import { NextResponse } from "next/server";
 
 //This api is allowed for hiring manager only
@@ -22,14 +23,16 @@ export const GET = async (req, { params }: { params: { jobId: string } }) => {
   }
 
   try {
-    //TODO: Get the account id from auth
-    const accountId = "2";
-
-    //Fetch the logged in account details
-    const accountDetails = await knex("accounts")
-      .where({ account_id: accountId })
-      .select("type")
-      .first();
+    const accountDetails = await getAccountDetails();
+    const accountId = accountDetails?.account_id;
+    if (!accountId || accountDetails.type !== ACCOUNT_TYPE.RECRUITER) {
+      return NextResponse.json(
+        {
+          message: "Unauthorized",
+        },
+        { status: 403 }
+      );
+    }
 
     //Check if the account is of type recruiter
     if (!accountDetails || accountDetails.type !== ACCOUNT_TYPE.RECRUITER) {
