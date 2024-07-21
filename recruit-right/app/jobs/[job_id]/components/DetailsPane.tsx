@@ -1,5 +1,6 @@
 import { Tabs, TabsProps } from "antd";
 import { useMemo } from "react";
+import SubmissionListing from "./SubmissionListing";
 
 const BasicInfo = ({ fieldName, fieldValue }) => {
   return (
@@ -51,7 +52,7 @@ const DetailsPane = ({
       {
         key: "2",
         label: "Applied Candidates",
-        children: <>Test 2</>,
+        children: <SubmissionListing jobId={jobId} />,
       },
     ];
   }, []);
