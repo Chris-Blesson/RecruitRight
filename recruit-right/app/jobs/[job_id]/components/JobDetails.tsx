@@ -2,7 +2,6 @@ import DetailsPane from "./DetailsPane";
 import EditJobDetailsPane from "./EditJobDetailsPane";
 
 const JobDetails = ({ jobDetails }) => {
-  console.log("jobDetails", jobDetails);
   const {
     job_id,
     company_name,
