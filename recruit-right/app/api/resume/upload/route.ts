@@ -5,6 +5,7 @@ import { RESUME_PARSER_STATUS } from "@/constants/resumeParserStatus";
 import { PROCESS_TYPE } from "@/constants/processTypes";
 import { knex } from "@/lib/db";
 import { put, del } from "@vercel/blob";
+import { currentUser } from "@clerk/nextjs/server";
 /**
  *
  * This function is for uploading the resume
@@ -29,9 +30,14 @@ export async function POST(req: Request) {
   try {
     // Write the file to the specified directory (public/assets) with the modified filename
 
-    //TODO: Get acc id from the header
-    const accountId = "1";
-
+    const user = await currentUser();
+    const email = user?.primaryEmailAddress?.emailAddress;
+    const accountDetails = await knex("accounts")
+      .where({
+        email,
+      })
+      .first();
+    const accountId = accountDetails?.account_id;
     //Check if there is an in-progress resume-parse job
     const inProgressJob = await knex("process")
       .where("account_id", accountId)
@@ -65,13 +71,6 @@ export async function POST(req: Request) {
     try {
       //Generate the process id
       const processId = entityIdGenerator("process");
-
-      const accountDetails = await knex("accounts")
-        .where({
-          account_id: accountId,
-        })
-        .select("resume_url")
-        .first();
 
       if (accountDetails.resume_url) {
         await del(accountDetails.resume_url, {

@@ -17,11 +17,17 @@ const ResumeUploader = () => {
   };
 
   const email = user?.user?.primaryEmailAddress?.emailAddress;
-  const createAccount = () => {
+
+  const startYourJourneyClick = (e: { stopPropagation: () => void }) => {
+    e.stopPropagation();
     const requestBody = {
       type: ACCOUNT_TYPE.JOB_SEEKER,
       email: email,
     };
+    const formData = new FormData();
+    formData.append("file", uploadedResume as FileType);
+    setLoading(true);
+
     fetch("/api/accounts/create", {
       method: "POST",
       body: JSON.stringify(requestBody),
@@ -30,31 +36,22 @@ const ResumeUploader = () => {
         return res.json();
       })
       .then(() => {
-        message.success("Account created successfully");
-        window?.location?.reload();
-      });
-  };
-  const startYourJourneyClick = (e: { stopPropagation: () => void }) => {
-    e.stopPropagation();
-    const formData = new FormData();
-    formData.append("file", uploadedResume as FileType);
-    setLoading(true);
-
-    fetch("/api/resume/upload", {
-      method: "POST",
-      body: formData,
-    })
-      .then(() => {
-        message.success("Resume is safe with us!");
-        setIsResumeUploaded(true);
-        createAccount();
-      })
-      .catch((err) => {
-        message.error("Something went wrong while uploading the resume");
-        console.log("error", err);
-      })
-      .finally(() => {
-        setLoading(false);
+        fetch("/api/resume/upload", {
+          method: "POST",
+          body: formData,
+        })
+          .then(() => {
+            message.success("Resume is safe with us!");
+            setIsResumeUploaded(true);
+            window?.location?.reload();
+          })
+          .catch((err) => {
+            message.error("Something went wrong while uploading the resume");
+            console.log("error", err);
+          })
+          .finally(() => {
+            setLoading(false);
+          });
       });
   };
 
