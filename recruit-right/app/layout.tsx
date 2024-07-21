@@ -1,11 +1,8 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import AccountsContextProvider from "./components/AccountsContext";
-import { Layout } from "antd";
-import Sidebar from "./components/Sidebar";
-import Header, { HeaderContextProvider } from "./components/Header";
-
+import { ClerkProvider } from "@clerk/nextjs";
+import LayoutDecider from "./LayoutDecider";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
@@ -19,27 +16,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className={inter.className}>
-        <Layout hasSider>
-          <Sidebar />
-          <Layout
-            style={{
-              marginLeft: 200,
-              height: "100vh",
-              backgroundColor: "#f0f0f0",
-              color: "#1f1f1f",
-            }}
-          >
-            <HeaderContextProvider>
-              <Header />
-              <div className="px-4 max-h-[95vh] overflow-auto rounded-md">
-                <AccountsContextProvider>{children}</AccountsContextProvider>
-              </div>
-            </HeaderContextProvider>
-          </Layout>
-        </Layout>
-      </body>
-    </html>
+    <ClerkProvider>
+      <html lang="en">
+        <body className={inter.className}>
+          <LayoutDecider>{children}</LayoutDecider>
+        </body>
+      </html>
+    </ClerkProvider>
   );
 }

@@ -1,10 +1,16 @@
 import { knex } from "@/lib/db";
+import { auth, currentUser } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
 
 export async function GET() {
-  //TODO: Get this from authentication email
-  const email = "lokprakash100@gmail.com";
-  if (!email) {
+  const user = await currentUser();
+  const { userId } = auth();
+  const loggedInEmailId = user?.primaryEmailAddress?.emailAddress;
+
+  if (!userId) {
+    return new NextResponse("Unauthorized", { status: 401 });
+  }
+  if (!loggedInEmailId) {
     return NextResponse.json(
       {
         message: "Email is required",
@@ -14,14 +20,16 @@ export async function GET() {
       }
     );
   }
-  const accountDetails = await knex("accounts").where("email", email).first();
+  const accountDetails = await knex("accounts")
+    .where("email", loggedInEmailId)
+    .first();
   if (!accountDetails) {
     return NextResponse.json(
       {
         message: "Not found",
       },
       {
-        status: 400,
+        status: 404,
       }
     );
   }

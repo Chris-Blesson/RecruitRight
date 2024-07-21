@@ -7,24 +7,36 @@ import {
   UserOutlined,
 } from "@ant-design/icons";
 import Link from "next/link";
+import { useAccountsContext } from "../AccountsContext";
+import { ACCOUNT_TYPE } from "@/constants/accountTypes";
 const Sidebar = () => {
-  const sidebarMenu = [
-    {
-      key: "profile",
-      label: <Link href="/user">My Profile</Link>,
-      icon: <UserOutlined />,
-    },
-    {
-      key: "jobs",
-      label: <Link href="/jobs">Jobs</Link>,
-      icon: <RedEnvelopeOutlined />,
-    },
-    {
-      key: "applications",
-      label: <Link href="applications">My Applications</Link>,
-      icon: <ContactsOutlined />,
-    },
-  ];
+  const user = useAccountsContext();
+  const isRecruiter = user.accountDetails.type === ACCOUNT_TYPE.RECRUITER;
+  const sidebarMenu = isRecruiter
+    ? [
+        {
+          key: "jobs",
+          label: <Link href="/jobs">Jobs</Link>,
+          icon: <RedEnvelopeOutlined />,
+        },
+      ]
+    : [
+        {
+          key: "profile",
+          label: <Link href="/user">My Profile</Link>,
+          icon: <UserOutlined />,
+        },
+        {
+          key: "jobs",
+          label: <Link href="/jobs">Jobs</Link>,
+          icon: <RedEnvelopeOutlined />,
+        },
+        {
+          key: "applications",
+          label: <Link href="applications">My Applications</Link>,
+          icon: <ContactsOutlined />,
+        },
+      ];
 
   return (
     <Sider
