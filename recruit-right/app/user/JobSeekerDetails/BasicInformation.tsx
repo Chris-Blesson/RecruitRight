@@ -20,7 +20,7 @@ const BasicInformation = () => {
   const [form] = Form.useForm();
   const [isSuggestionsModalOpen, setIsSuggestionModalOpen] = useState(false);
 
-  const basicInformation = accountDetails?.resume_payload?.basics?.Basics;
+  const basicInformation = accountDetails?.resume_payload?.basics;
   if (!basicInformation) {
     return <p>Not available yet</p>;
   }
@@ -188,7 +188,12 @@ const BasicInformation = () => {
           setIsSuggestionModalOpen(false);
         }}
       >
-        <Suggestions suggestions={basicInformation.improvments_suggestions} />
+        <Suggestions
+          suggestions={
+            basicInformation.improvements_suggestions ||
+            basicInformation.improvments_suggestions
+          }
+        />
       </Modal>
     </div>
   );

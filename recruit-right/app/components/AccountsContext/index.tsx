@@ -18,15 +18,13 @@ const defaultAccountDetails = {
   name: null,
   resume_url: null,
   resume_payload: {
-    basics: {
-      Basics: {
-        name: null,
-        email: null,
-        website: null,
-        address: null,
-        phone: null,
-        improvments_suggestions: null,
-      },
+    Basics: {
+      name: null,
+      email: null,
+      website: null,
+      address: null,
+      phone: null,
+      improvments_suggestions: null,
     },
     education: [],
     awards: [],
@@ -167,7 +165,6 @@ const AccountsContextProvider = ({ children }: { children: any }) => {
   if (!accountPayload.data) {
     return <OnboardingForm />;
   }
-
   return (
     <AccountsContext.Provider
       value={{

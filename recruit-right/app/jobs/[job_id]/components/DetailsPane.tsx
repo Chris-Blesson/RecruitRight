@@ -1,6 +1,8 @@
-import { Tabs, TabsProps } from "antd";
+import { Button, Tabs, TabsProps } from "antd";
 import { useMemo } from "react";
 import SubmissionListing from "./SubmissionListing";
+import { ACCOUNT_TYPE } from "@/constants/accountTypes";
+import Link from "next/link";
 
 const BasicInfo = ({ fieldName, fieldValue }) => {
   return (
@@ -36,29 +38,50 @@ const DetailsPane = ({
   location,
   compensationCurrency,
   compensationAmount,
+  accountDetails,
 }) => {
+  const isRecruiter = accountDetails.type === ACCOUNT_TYPE.RECRUITER;
+
   const items: TabsProps["items"] = useMemo(() => {
-    return [
-      {
-        key: "1",
-        label: "Job and Company Info",
-        children: (
-          <JobAndCompanyInfo
-            jobDescription={jobDescription}
-            companyDescription={companyDescription}
-          />
-        ),
-      },
-      {
-        key: "2",
-        label: "Applied Candidates",
-        children: <SubmissionListing jobId={jobId} />,
-      },
-    ];
+    return isRecruiter
+      ? [
+          {
+            key: "1",
+            label: "Job and Company Info",
+            children: (
+              <JobAndCompanyInfo
+                jobDescription={jobDescription}
+                companyDescription={companyDescription}
+              />
+            ),
+          },
+          {
+            key: "2",
+            label: "Applied Candidates",
+            children: <SubmissionListing jobId={jobId} />,
+          },
+        ]
+      : [
+          {
+            key: "1",
+            label: "Job and Company Info",
+            children: (
+              <JobAndCompanyInfo
+                jobDescription={jobDescription}
+                companyDescription={companyDescription}
+              />
+            ),
+          },
+        ];
   }, []);
   return (
     <div className="bg-white flex-1 rounded-lg p-6 font-medium flex flex-col gap-y-3 h-full">
-      <h1 className="text-2xl font-bold">Contest Details</h1>
+      <div className="flex justify-between items-center">
+        <h1 className="text-2xl font-bold">Contest Details</h1>
+        <Link href={`/jobs/${jobId}/apply`} target="_blank">
+          <Button type="primary">Apply</Button>
+        </Link>
+      </div>
       <div className="job-details flex flex-col gap-y-4 overflow-auto">
         <BasicInfo fieldName={"Company Name"} fieldValue={companyName} />
         <BasicInfo fieldName={"Location"} fieldValue={location} />

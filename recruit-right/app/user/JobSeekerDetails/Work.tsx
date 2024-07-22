@@ -423,7 +423,10 @@ const Work = () => {
           closable={false}
         >
           <Suggestions
-            suggestions={workExperience?.[idx]?.["improvements_suggestions"]}
+            suggestions={
+              workExperience?.[idx]?.["improvements_suggestions"] ||
+              workExperience?.[idx]?.["improvments_suggestions"]
+            }
           />
         </Modal>
       </div>
