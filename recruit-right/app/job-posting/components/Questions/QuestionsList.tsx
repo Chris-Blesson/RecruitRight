@@ -1,6 +1,6 @@
 const QuestionCard = ({ question }) => {
   return (
-    <div className="rounded-md bg-brown-300 p-4 flex items-center justify-between">
+    <div className="rounded-md bg-gray-100 p-4 flex items-center justify-between">
       {question}
     </div>
   );

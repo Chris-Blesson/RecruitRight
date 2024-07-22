@@ -8,14 +8,13 @@ export async function GET(
   const userId = params.userId;
 
   try {
-    const results = await client.getRecommendations([
+    const { results } = await client.getRecommendations([
       {
         indexName: "candidates",
         model: "related-products",
         objectID: userId,
       },
     ]);
-    console.log("results", results);
     return NextResponse.json({
       results,
       status: "ok",
