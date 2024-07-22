@@ -9,7 +9,6 @@ const Jobs = async () => {
     if (!jobs || !jobs.length) {
       return <p>No jobs found</p>;
     }
-    console.log("jobs", jobs);
     return (
       <>
         <div>

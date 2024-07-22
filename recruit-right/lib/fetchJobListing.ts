@@ -1,6 +1,8 @@
 import moment from "moment";
 import { knex } from "./db";
 import { JOB_STATUS } from "@/constants/jobStatus";
+import { getAccountDetails } from "./getAccountDetails";
+import { ACCOUNT_TYPE } from "@/constants/accountTypes";
 
 const getStatus = ({ currentTime, startTime, endTime }) => {
   if (startTime <= currentTime && currentTime < endTime) {
@@ -13,14 +15,31 @@ const getStatus = ({ currentTime, startTime, endTime }) => {
 };
 export const fetchJobListing = async () => {
   try {
-    const jobListing = await knex("job").select([
-      "company_name",
-      "job_id",
-      "role",
-      "location",
-      "start_date_time",
-      "end_date_time",
-    ]);
+    const accountDetails = await getAccountDetails();
+    const accountId = accountDetails.account_id;
+    const isRecruiter = accountDetails.type === ACCOUNT_TYPE.RECRUITER;
+
+    const jobListing = isRecruiter
+      ? await knex("job")
+          .select([
+            "company_name",
+            "job_id",
+            "role",
+            "location",
+            "start_date_time",
+            "end_date_time",
+          ])
+          .where({
+            account_id: accountId,
+          })
+      : await knex("job").select([
+          "company_name",
+          "job_id",
+          "role",
+          "location",
+          "start_date_time",
+          "end_date_time",
+        ]);
     if (!jobListing) {
       return [];
     }
@@ -31,11 +50,7 @@ export const fetchJobListing = async () => {
         moment(job["start_date_time"]).unix(),
         moment(job["end_date_time"]).unix(),
       ];
-      console.log("time", {
-        currentTime,
-        startTime,
-        endTime,
-      });
+
       return {
         ...job,
         status: getStatus({

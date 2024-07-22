@@ -5,6 +5,7 @@ import { NextResponse } from "next/server";
 export async function GET() {
   const user = await currentUser();
   const { userId } = auth();
+
   const loggedInEmailId = user?.primaryEmailAddress?.emailAddress;
 
   if (!userId) {

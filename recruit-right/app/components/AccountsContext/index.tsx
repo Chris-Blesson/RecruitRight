@@ -18,15 +18,13 @@ const defaultAccountDetails = {
   name: null,
   resume_url: null,
   resume_payload: {
-    basics: {
-      Basics: {
-        name: null,
-        email: null,
-        website: null,
-        address: null,
-        phone: null,
-        improvments_suggestions: null,
-      },
+    Basics: {
+      name: null,
+      email: null,
+      website: null,
+      address: null,
+      phone: null,
+      improvments_suggestions: null,
     },
     education: [],
     awards: [],
@@ -83,6 +81,13 @@ const AccountsContextProvider = ({ children }: { children: any }) => {
             loading: false,
             data: null,
           });
+        } else if (data?.message === "Unauthorized") {
+          console.log("fetch", data);
+          setAccountPayload({
+            ...accountPayload,
+            loading: false,
+            data: null,
+          });
         } else {
           setAccountPayload({
             ...accountPayload,
@@ -92,6 +97,7 @@ const AccountsContextProvider = ({ children }: { children: any }) => {
         }
       })
       .catch((err) => {
+        window?.location?.replace("/sign-in");
         setAccountPayload({
           ...accountPayload,
           loading: false,
@@ -167,7 +173,6 @@ const AccountsContextProvider = ({ children }: { children: any }) => {
   if (!accountPayload.data) {
     return <OnboardingForm />;
   }
-
   return (
     <AccountsContext.Provider
       value={{

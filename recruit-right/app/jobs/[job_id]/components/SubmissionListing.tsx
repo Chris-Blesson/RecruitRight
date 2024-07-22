@@ -1,47 +1,12 @@
 "use client";
 import { SUBMISSION_STATUS_TAG_MAPPING } from "@/constants/submissionStatus";
-import { Button, Drawer, Dropdown, Form, Input, Table, Tag } from "antd";
-import { Dispatch, SetStateAction, useEffect, useState } from "react";
-import { MoreOutlined, MailOutlined } from "@ant-design/icons";
-import AIPrompt from "@/app/components/AIPrompt";
-import { promptGenerationHandler } from "@/app/utils/promptGenerator";
-
-type IAction = "invite" | "reject";
-
-const handleReachOutActions = ({
-  accountId,
-  action,
-  setCurrentCandidate,
-}: {
-  accountId: string;
-  action: IAction; // Refer ACTIONS key
-  setCurrentCandidate: Dispatch<SetStateAction<string>>;
-}) => {
-  console.log(action, accountId);
-  if (action === "invite") setCurrentCandidate(accountId);
-  //   TODO: @lok-prakash to handle for reject flow
-};
-
-// TODO: @lok-prakash to handle reach out logic
-const onEmailSend = () => {};
+import { Button, Drawer, Table, Tag, Tooltip } from "antd";
+import { useEffect, useState } from "react";
+import SendInviteDrawer from "./SendInviteDrawer";
+import CandidateDetails from "./CandidateDetails";
+import RejectCandidate from "./RejectCandidate";
 
 const COLUMNS = [
-  {
-    title: "Candidates",
-    dataIndex: "candidates",
-    key: "candidates",
-    render: (_, { accountId }) => (
-      <Button
-        type="link"
-        onClick={() => {
-          // TODO: @lok-prakash to wire his component
-          console.log("Record", accountId);
-        }}
-      >
-        View Candidate
-      </Button>
-    ),
-  },
   {
     title: "Relevancy Score",
     dataIndex: "relevancyScore",
@@ -51,7 +16,17 @@ const COLUMNS = [
     title: "Feedback",
     dataIndex: "feedback",
     key: "feedback",
+    render: (_, data) => {
+      return (
+        <Tooltip title={data.feedback}>
+          <div className="w-[200px] max-w-[200px] text-ellipsis overflow-hidden line-clamp-3">
+            {data.feedback}
+          </div>
+        </Tooltip>
+      );
+    },
   },
+
   {
     title: "Candidate Answer",
     dataIndex: "answers",
@@ -87,33 +62,47 @@ const COLUMNS = [
   {
     title: "Action",
     key: "operation",
-    render: (_, { accountId, setCurrentCandidate }) => (
-      <Dropdown
-        menu={{
-          items: ACTIONS,
-          onClick: (e) =>
-            handleReachOutActions({
-              accountId,
-              action: e?.key as IAction,
-              setCurrentCandidate,
-            }),
-        }}
-      >
-        <Button type="text" icon={<MoreOutlined />}></Button>
-      </Dropdown>
-    ),
+    render: (
+      _,
+      {
+        accountId,
+        setCurrentCandidate,
+        setCurrentSubmissionStatus,
+        status,
+        submissionId,
+        setCurrentSubmissionId,
+      }
+    ) => {
+      return (
+        <div className="flex items-center gap-2 font-md">
+          <div>
+            <CandidateDetails
+              submissionId={submissionId}
+              currentCandidate={accountId}
+            />
+          </div>
+          <div>
+            <SendInviteDrawer
+              submissionId={submissionId}
+              currentCandidate={accountId}
+              submissionStatus={status}
+            />
+          </div>
+          <Tooltip title="Reject the candidate">
+            <RejectCandidate submissionId={submissionId} />
+          </Tooltip>
+        </div>
+      );
+    },
   },
-];
-
-const ACTIONS = [
-  { key: "invite", label: "Send Invite" },
-  { key: "reject", label: "Reject" },
 ];
 
 const constructTableData = ({
   submissions,
   setCandidateAnswers,
   setCurrentCandidate,
+  setCurrentSubmissionStatus,
+  setCurrentSubmissionId,
 }) => {
   return submissions.map((record) => {
     const { account_id, evaluation, status, test_response } = record;
@@ -125,6 +114,9 @@ const constructTableData = ({
       answers: test_response?.response,
       setCandidateAnswers,
       setCurrentCandidate,
+      setCurrentSubmissionStatus,
+      submissionId: record?.submission_id,
+      setCurrentSubmissionId,
     };
   });
 };
@@ -136,7 +128,7 @@ const CandidateResponse = ({ answers = {} }) => {
     <section className="flex flex-col gap-y-3">
       {questions.map((question, index) => {
         return (
-          <div className="flex flex-col gap-y-2">
+          <div className="flex flex-col gap-y-2" key={index}>
             <h2 className="text-md font-medium capitalize">
               {index + 1 + ". " + question}
             </h2>
@@ -152,7 +144,8 @@ const SubmissionListing = ({ jobId }) => {
   const [submissions, setSubmissions] = useState();
   const [candidateAnswers, setCandidateAnswers] = useState(null);
   const [currentCandidate, setCurrentCandidate] = useState("");
-  const [form] = Form.useForm();
+  const [currentSubmissionStatus, setCurrentSubmissionStatus] = useState("");
+  const [currentSubmissionId, setCurrentSubmissionId] = useState("");
   useEffect(() => {
     fetch(`/api/job/${jobId}/submissions`).then(async (data) => {
       const response = await data.json();
@@ -161,6 +154,8 @@ const SubmissionListing = ({ jobId }) => {
           submissions: response,
           setCandidateAnswers,
           setCurrentCandidate,
+          setCurrentSubmissionStatus,
+          setCurrentSubmissionId,
         })
       );
     });
@@ -179,64 +174,6 @@ const SubmissionListing = ({ jobId }) => {
         open={!!candidateAnswers}
       >
         <CandidateResponse answers={candidateAnswers ?? {}} />
-      </Drawer>
-      {/* Email invite AI template */}
-      <Drawer
-        width={500}
-        title="Invite Candidate"
-        onClose={() => {
-          setCurrentCandidate("");
-          form.setFieldsValue({
-            email_invite: "",
-          });
-        }}
-        open={!!currentCandidate}
-      >
-        <Form
-          className="max-w-[750px] flex flex-col gap-y-5"
-          form={form}
-          name="job_posting"
-          layout="vertical"
-          onFinish={onEmailSend}
-        >
-          <Form.Item
-            className="relative"
-            name="email_invite"
-            label={
-              <div className="flex items-center justify-between gap-x-2">
-                <p className="font-medium">Invite Email</p>
-                <AIPrompt
-                  triggerText=""
-                  asyncSubmitHandler={async (content) => {
-                    const emailResponse = await promptGenerationHandler({
-                      content,
-                    });
-                    form.setFieldsValue({
-                      email_invite: emailResponse?.content,
-                    });
-                  }}
-                />
-              </div>
-            }
-          >
-            <Input.TextArea rows={4} />
-          </Form.Item>
-          <Form.Item className="flex justify-end" shouldUpdate>
-            {() => (
-              <Button
-                icon={<MailOutlined />}
-                type="primary"
-                htmlType="submit"
-                disabled={
-                  !!form.getFieldsError().filter(({ errors }) => errors.length)
-                    .length
-                }
-              >
-                Send Invite
-              </Button>
-            )}
-          </Form.Item>
-        </Form>
       </Drawer>
     </>
   );

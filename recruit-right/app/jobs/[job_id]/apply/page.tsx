@@ -35,7 +35,7 @@ const JobApplyPage = async ({ params }: { params: { job_id: string } }) => {
             <p className="text-lg font-bold">
               You have completed the application already
             </p>
-            <Link href={`/${jobId}/`}>
+            <Link href={`/jobs/${jobId}/`}>
               <Button color="primary">Go to job details</Button>
             </Link>
           </div>

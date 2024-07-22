@@ -35,9 +35,7 @@ const JobListingTable = ({ jobListing }) => {
       title: "View",
       key: "view",
       render: (_, record) => (
-        <Link href={`/jobs/${record["job_id"]}`} target="_blank">
-          View
-        </Link>
+        <Link href={`/jobs/${record["job_id"]}`}>View</Link>
       ),
     },
   ];

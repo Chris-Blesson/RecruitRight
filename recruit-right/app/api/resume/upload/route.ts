@@ -70,22 +70,22 @@ export async function POST(req: Request) {
       //Generate the process id
       const processId = entityIdGenerator("process");
 
-      // if (accountDetails.resume_url) {
-      //   await del(accountDetails.resume_url, {
-      //     token: process.env.NEXT_BLOB_STORAGE_KEY,
-      //   });
-      // }
-      // const data = await put(`${accountId}.pdf`, file, {
-      //   access: "public",
-      //   contentType: "application/pdf",
-      //   token: process.env.NEXT_BLOB_STORAGE_KEY,
-      // });
-      // console.log(">>>File created successfully", data);
+      if (accountDetails.resume_url) {
+        await del(accountDetails.resume_url, {
+          token: process.env.NEXT_BLOB_STORAGE_KEY,
+        });
+      }
+      const data = await put(`${accountId}.pdf`, file, {
+        access: "public",
+        contentType: "application/pdf",
+        token: process.env.NEXT_BLOB_STORAGE_KEY,
+      });
+      console.log(">>>File created successfully", data);
 
-      //TODO: Update the resume url in accounts table
-      // await knex("accounts").where("account_id", accountId).update({
-      //   resume_url: data.url,
-      // });
+      // TODO: Update the resume url in accounts table
+      await knex("accounts").where("account_id", accountId).update({
+        resume_url: data.url,
+      });
 
       //Insert the process to table
       await knex("process").insert({
@@ -100,8 +100,7 @@ export async function POST(req: Request) {
         method: "POST",
         body: JSON.stringify({
           account_id: accountId,
-          pdf_url:
-            "https://apdnwfr8uukus58w.public.blob.vercel-storage.com/account_f0a_1721547543900-oWi4dCSeo9XDcdvFBXE5LgXSSxibfe.pdf",
+          pdf_url: data.url,
         }),
         headers: {
           "Content-Type": "application/json",
