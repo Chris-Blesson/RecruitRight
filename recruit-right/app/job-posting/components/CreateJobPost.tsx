@@ -19,7 +19,7 @@ const CreateJobPost = () => {
         <div className="flex justify-between">
           <div
             className="form-container flex relative flex-col flex-1 after:content-['&nbsp;'] after:h-full after:border  after:absolute
-        after:right-[5%] after:border-brown-600"
+        after:right-[5%] after:border-gray-100"
           >
             <h1 className="text-lg font-bold">Create Job Posting</h1>
             <CreateJobForm form={form} />

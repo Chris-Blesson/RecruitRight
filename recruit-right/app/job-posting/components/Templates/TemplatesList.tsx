@@ -15,7 +15,7 @@ const TemplateCard = ({
   applyTemplate: ({ template }: { template: ITemplate }) => void;
 }) => {
   return (
-    <div className="rounded-md bg-brown-300 p-4 flex items-center justify-between">
+    <div className="rounded-md bg-gray-100 p-4 flex items-center justify-between">
       <h2 className="font-medium">{template.template_name}</h2>
       <Button
         onClick={() => {

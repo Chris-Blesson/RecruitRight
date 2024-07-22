@@ -22,7 +22,7 @@ export const CurrencySelector = (
 const CreateJobForm = ({ form }) => {
   const [questions, setQuestions] = useState([
     "How do you handle conflicts in your workplace ?",
-    "Why do you handle conflicts in your workplace ?",
+    "When to disagree and commit and why?",
   ]);
   const onFinish = (values: any) => {
     fetch("/api/job/create", {
