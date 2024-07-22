@@ -54,7 +54,6 @@ const ViewCandidateDetails = () => {
         } else {
           setCandidateAccountDetails({ ...response });
         }
-        console.log("response", response);
       })
       .catch((err) => {
         console.log("error", err);

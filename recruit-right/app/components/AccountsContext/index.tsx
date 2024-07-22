@@ -81,6 +81,13 @@ const AccountsContextProvider = ({ children }: { children: any }) => {
             loading: false,
             data: null,
           });
+        } else if (data?.message === "Unauthorized") {
+          console.log("fetch", data);
+          setAccountPayload({
+            ...accountPayload,
+            loading: false,
+            data: null,
+          });
         } else {
           setAccountPayload({
             ...accountPayload,
@@ -90,6 +97,7 @@ const AccountsContextProvider = ({ children }: { children: any }) => {
         }
       })
       .catch((err) => {
+        window?.location?.replace("/sign-in");
         setAccountPayload({
           ...accountPayload,
           loading: false,

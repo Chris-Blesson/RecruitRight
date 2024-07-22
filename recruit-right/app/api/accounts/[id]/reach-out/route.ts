@@ -1,6 +1,7 @@
 import { ACCOUNT_TYPE } from "@/constants/accountTypes";
 import { SUBMISSION_STATUS } from "@/constants/submissionStatus";
 import { knex } from "@/lib/db";
+import { getAccountDetails } from "@/lib/getAccountDetails";
 import { NextResponse } from "next/server";
 import { Resend } from "resend";
 
@@ -10,8 +11,18 @@ export const POST = async (req, params) => {
   try {
     console.log("POST Request");
 
-    //TODO: Get this from the auth
-    const loggedInAccountId = "2";
+    const loggedInAccountDetails = await getAccountDetails();
+
+    if (!loggedInAccountDetails) {
+      return NextResponse.json(
+        {
+          message: "Unauthorized",
+        },
+        {
+          status: 403,
+        }
+      );
+    }
     const requestBody = await req.json();
     console.log("request body", requestBody);
     if (!requestBody) {
@@ -29,15 +40,10 @@ export const POST = async (req, params) => {
     console.log("fetch request init", candidateId);
 
     //Fetch candidate and the logged in account details
-    const [candidateDetails, loggedInAccountDetails] = await Promise.all([
+    const [candidateDetails] = await Promise.all([
       knex("accounts")
         .where({
           account_id: candidateId,
-        })
-        .first(),
-      knex("accounts")
-        .where({
-          account_id: loggedInAccountId,
         })
         .first(),
     ]);

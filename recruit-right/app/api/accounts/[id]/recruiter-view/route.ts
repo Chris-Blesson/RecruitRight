@@ -1,6 +1,7 @@
 import { ACCOUNT_TYPE } from "@/constants/accountTypes";
 import { SUBMISSION_STATUS } from "@/constants/submissionStatus";
 import { knex } from "@/lib/db";
+import { getAccountDetails } from "@/lib/getAccountDetails";
 import { NextResponse } from "next/server";
 
 //This api is only accessible for recruiters
@@ -9,7 +10,19 @@ export const GET = async (req, { params }: { params: { id: string } }) => {
     const candidateAccount = params.id;
 
     //Get the recruiter account id from auth
-    const recruiterAccountId = "2";
+    const accountDetails = await getAccountDetails();
+    const isRecruiter = accountDetails.type === ACCOUNT_TYPE.RECRUITER;
+    if (!isRecruiter) {
+      return NextResponse.json(
+        {
+          message: "Unauthorized",
+        },
+        {
+          status: 403,
+        }
+      );
+    }
+    const recruiterAccountId = accountDetails?.account_id;
     const submissionId = req.nextUrl.searchParams.get("submission_id");
     if (!submissionId) {
       return NextResponse.json(
@@ -18,25 +31,6 @@ export const GET = async (req, { params }: { params: { id: string } }) => {
         },
         {
           status: 400,
-        }
-      );
-    }
-    const recruiterAccountDetails = await knex("accounts")
-      .where({
-        account_id: recruiterAccountId,
-      })
-      .select("type")
-      .first();
-
-    const isRecruiterAccountARecruiter =
-      recruiterAccountDetails.type === ACCOUNT_TYPE.RECRUITER;
-    if (!isRecruiterAccountARecruiter) {
-      return NextResponse.json(
-        {
-          message: "Unauthorized",
-        },
-        {
-          status: 403,
         }
       );
     }
@@ -141,6 +135,7 @@ export const GET = async (req, { params }: { params: { id: string } }) => {
       ...candidateDetails?.resume_payload,
     });
   } catch (err) {
+    console.log("err", err);
     return NextResponse.json(
       {
         message: err,

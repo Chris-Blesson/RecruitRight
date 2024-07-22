@@ -78,9 +78,11 @@ const DetailsPane = ({
     <div className="bg-white flex-1 rounded-lg p-6 font-medium flex flex-col gap-y-3 h-full">
       <div className="flex justify-between items-center">
         <h1 className="text-2xl font-bold">Contest Details</h1>
-        <Link href={`/jobs/${jobId}/apply`} target="_blank">
-          <Button type="primary">Apply</Button>
-        </Link>
+        {!isRecruiter && (
+          <Link href={`/jobs/${jobId}/apply`} target="_blank">
+            <Button type="primary">Apply</Button>
+          </Link>
+        )}
       </div>
       <div className="job-details flex flex-col gap-y-4 overflow-auto">
         <BasicInfo fieldName={"Company Name"} fieldValue={companyName} />

@@ -1,20 +1,32 @@
 "use client";
 
+import { useClerk } from "@clerk/nextjs";
 import { useContext, useState, createContext } from "react";
-
+import { PoweroffOutlined } from "@ant-design/icons";
 const HeaderContext = createContext({
   label: <></>,
   setLabel: (labelText) => {},
 });
 const Header = () => {
   const { label } = useHeaderContext();
+  const { signOut } = useClerk();
   return (
     <div
       className={
-        "h-10 text-lg text-[#434343] pl-3 flex items-center font-semibold bg-white shadow mb-5"
+        "h-10 text-lg text-[#434343] px-3 flex items-center justify-between font-semibold bg-white shadow mb-5"
       }
     >
-      {label}
+      <div>{label}</div>
+      <div>
+        <button
+          onClick={() => {
+            signOut();
+            window?.location?.replace("/sign-in");
+          }}
+        >
+          <PoweroffOutlined />
+        </button>
+      </div>
     </div>
   );
 };
