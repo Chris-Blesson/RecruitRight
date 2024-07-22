@@ -3,6 +3,7 @@ import { useMemo } from "react";
 import SubmissionListing from "./SubmissionListing";
 import { ACCOUNT_TYPE } from "@/constants/accountTypes";
 import Link from "next/link";
+import SimilarJobsRecommendation from "./SimilarJobsRecommendation";
 
 const BasicInfo = ({ fieldName, fieldValue }) => {
   return (
@@ -70,6 +71,13 @@ const DetailsPane = ({
                 jobDescription={jobDescription}
                 companyDescription={companyDescription}
               />
+            ),
+          },
+          {
+            key: "2",
+            label: "Similar Jobs",
+            children: (
+              <SimilarJobsRecommendation jobId={jobId}/>
             ),
           },
         ];

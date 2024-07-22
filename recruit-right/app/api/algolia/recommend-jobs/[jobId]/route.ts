@@ -7,14 +7,13 @@ export async function GET(
 ) {
   const jobId = params.jobId;
   try {
-    const results = await client.getRecommendations([
+    const { results } = await client.getRecommendations([
       {
         indexName: "jobs",
         model: "related-products",
         objectID: jobId,
       },
     ]);
-    console.log("results", results);
     return NextResponse.json({
       results,
       status: "ok",

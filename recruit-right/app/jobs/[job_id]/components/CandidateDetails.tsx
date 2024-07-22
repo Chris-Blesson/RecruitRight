@@ -1,10 +1,11 @@
 "use client";
 
-import { Button, message, Modal, Tooltip } from "antd";
+import { Button, message, Modal, Tabs, Tooltip } from "antd";
 import { UserOutlined } from "@ant-design/icons";
 import { SUBMISSION_STATUS } from "@/constants/submissionStatus";
 import ReachOutUi from "./ReachOutUi";
 import { useEffect, useState } from "react";
+import SimilarCandidatesRecommendation from "./SimilarCandidatesRecommendation";
 
 const CandidateDetails = ({ submissionId, currentCandidate }) => {
   const [isReachOutUiOpen, setIsReachOutUiOpen] = useState(false);
@@ -12,6 +13,33 @@ const CandidateDetails = ({ submissionId, currentCandidate }) => {
   const [currentCandidateDetails, setCurrentCandidateDetails] = useState({});
   const [CandidateResumeModalOpen, setCandidateResumeModalOpen] =
     useState(false);
+
+  const tabItems = [
+    {
+      label: "Candidate Resume",
+      key: "Resume",
+      children: (
+        <object
+          type="application/pdf"
+          //@ts-ignore
+          data={currentCandidateDetails?.resume_url}
+          width="100%"
+          height="600"
+        ></object>
+      ),
+    },
+    {
+      label: "Similar Candidates",
+      key: "Similar Candidates",
+      // @ts-ignore
+      children: (
+        <SimilarCandidatesRecommendation
+          //@ts-ignore
+          candidateEmail={currentCandidateDetails?.email}
+        />
+      ),
+    },
+  ];
 
   const fetchSubmissionInfo = () => {
     setIsLoading(true);
@@ -106,13 +134,14 @@ const CandidateDetails = ({ submissionId, currentCandidate }) => {
           },
         }}
       >
-        <object
-          type="application/pdf"
-          //@ts-ignore
-          data={currentCandidateDetails?.resume_url}
-          width="100%"
-          height="600"
-        ></object>
+        <Tabs
+          // tabPosition={"left"}
+          items={tabItems.map((tabItem) => {
+            return {
+              ...tabItem,
+            };
+          })}
+        />
       </Modal>
     </>
   );
