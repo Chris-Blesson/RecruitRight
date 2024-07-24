@@ -1,7 +1,8 @@
 "use client";
 
 import { SUBMISSION_STATUS_TAG_MAPPING } from "@/constants/submissionStatus";
-import { Table, Tag } from "antd";
+import { Button, Result, Table, Tag } from "antd";
+import Link from "next/link";
 import { useEffect, useState } from "react";
 
 const COLUMNS = [
@@ -46,7 +47,20 @@ const MyApplications = ({ accountId }) => {
 
   return (
     <div>
-      <Table dataSource={myApplications} columns={COLUMNS} />
+      {!myApplications.length && (
+        <Result
+          status={404}
+          title="You haven't applied for any job yet!"
+          extra={
+            <Link href={"/jobs"}>
+              <Button type="primary">Apply now</Button>
+            </Link>
+          }
+        />
+      )}
+      {!!myApplications.length && (
+        <Table dataSource={myApplications} columns={COLUMNS} />
+      )}
     </div>
   );
 };

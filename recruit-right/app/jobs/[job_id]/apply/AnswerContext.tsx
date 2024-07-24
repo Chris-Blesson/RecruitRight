@@ -15,6 +15,7 @@ const AnswerContext = createContext({
   setAnswer: (index) => {},
   onSaveHandler: (onSaveNotification?: () => void) => {},
   onSubmissionEndHandler: (onContestEndNotification?: () => {}) => {},
+  isLoading: false,
 });
 
 export const useAnswerContext = () => {
@@ -34,6 +35,7 @@ const AnswerContextProvider = ({ children, jobId }) => {
   const [isInitialAnswerFetching, setIsInitialAnswerFetching] = useState(false);
   const { changeSidebarView } = useAccountsContext();
   const [submitted, setSubmitted] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
   const onSaveHandler = useCallback(
     async (onSaveNotification?: (response: any) => void) => {
@@ -41,7 +43,7 @@ const AnswerContextProvider = ({ children, jobId }) => {
         jobId,
         testResponse: answer,
       };
-
+      setIsLoading(true);
       fetch("/api/submission/save", {
         method: "POST",
         body: JSON.stringify(requestBody),
@@ -54,6 +56,7 @@ const AnswerContextProvider = ({ children, jobId }) => {
         })
         .finally(() => {
           setSubmitted(true);
+          setIsLoading(false);
         });
     },
     [answer]
@@ -65,6 +68,7 @@ const AnswerContextProvider = ({ children, jobId }) => {
         jobId,
         testResponse: answer,
       };
+      setIsLoading(true);
       fetch("/api/submission/end", {
         method: "POST",
         body: JSON.stringify(requestBody),
@@ -83,6 +87,9 @@ const AnswerContextProvider = ({ children, jobId }) => {
           );
           console.log("error in answer context", err);
           throw new Error("Error in answer context");
+        })
+        .finally(() => {
+          setIsLoading(false);
         });
     },
     [answer]
@@ -90,6 +97,7 @@ const AnswerContextProvider = ({ children, jobId }) => {
 
   const savedAnswerFetcher = () => {
     setIsInitialAnswerFetching(true);
+    setIsLoading(true);
     fetch(`/api/submission/${jobId}/answer`, {
       cache: "no-store",
     })
@@ -102,6 +110,7 @@ const AnswerContextProvider = ({ children, jobId }) => {
       })
       .finally(() => {
         setIsInitialAnswerFetching(false);
+        setIsLoading(false);
       });
   };
   useEffect(() => {
@@ -119,6 +128,7 @@ const AnswerContextProvider = ({ children, jobId }) => {
         setAnswer,
         onSaveHandler,
         onSubmissionEndHandler,
+        isLoading,
       }}
     >
       {children}

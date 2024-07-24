@@ -10,7 +10,8 @@ const Footer = () => {
     questions,
     setCurrentSelectedQuestionIndex,
   } = useApplicationDetailsContext();
-  const { onSaveHandler, onSubmissionEndHandler } = useAnswerContext();
+  const { onSaveHandler, onSubmissionEndHandler, isLoading } =
+    useAnswerContext();
 
   const totalNoOfQuestions = questions.length;
   const isSaveAndNext = currentSelectedQuestionIndex < totalNoOfQuestions - 1;
@@ -43,6 +44,8 @@ const Footer = () => {
             onSubmissionEndHandler();
           }
         }}
+        loading={isLoading}
+        disabled={isLoading}
       >
         {!isSaveAndNext ? "Submit" : "Save & Next"}
       </Button>

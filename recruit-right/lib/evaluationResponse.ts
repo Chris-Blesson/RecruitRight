@@ -12,8 +12,6 @@ export const evaluationResponse = async ({
   const trxProvider = knex.transactionProvider();
   const trx = await trxProvider();
   try {
-    //TODO:Evaluate the response
-
     const modifiedTestResponse = Object.keys(testResponse).map((question) => {
       return {
         question,
@@ -29,18 +27,11 @@ export const evaluationResponse = async ({
       .first();
     console.log("account details", accountDetailsResume);
 
-    const evaluateResponse = JSON.stringify({
-      relevancy_score: 85,
-      reason:
-        "The candidate has a B.Tech in Information Technology and relevant work experience as a Software Engineer at Freshworks. They have demonstrated their technical skills through various projects and contributions to open source. However, the candidate's answers to the questions provided lack depth and specificity, which could indicate potential weaknesses in communication or problem-solving skills.",
+    const evaluateResponse = await responseEvaluator({
+      cvText: accountDetailsResume?.resume_payload,
+      testRespone: modifiedTestResponse,
+      role,
     });
-
-    //TODO: Remove mocking before prod
-    // const evaluateResponse = await responseEvaluator({
-    //   cvText: accountDetailsResume?.resume_payload,
-    //   testRespone: modifiedTestResponse,
-    //   role,
-    // });
     console.log("evaluate response", evaluateResponse);
     //Update the evaluation in the submission table
     const updatePayload = {
