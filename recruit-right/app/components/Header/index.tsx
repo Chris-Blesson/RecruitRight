@@ -3,6 +3,7 @@
 import { useClerk } from "@clerk/nextjs";
 import { useContext, useState, createContext } from "react";
 import { PoweroffOutlined } from "@ant-design/icons";
+import { Tooltip } from "antd";
 const HeaderContext = createContext({
   label: <></>,
   setLabel: (labelText) => {},
@@ -13,19 +14,22 @@ const Header = () => {
   return (
     <div
       className={
-        "h-10 text-lg text-[#434343] px-3 flex items-center justify-between font-semibold bg-white shadow mb-5"
+        "text-lg text-[#434343] px-3 py-3 flex items-center justify-between font-semibold bg-white shadow mb-5"
       }
     >
       <div>{label}</div>
       <div>
-        <button
-          onClick={() => {
-            signOut();
-            window?.location?.replace("/sign-in");
-          }}
-        >
-          <PoweroffOutlined />
-        </button>
+        <Tooltip title="logout" placement="left">
+          <button
+            onClick={() => {
+              signOut();
+              window?.location?.replace("/sign-in");
+            }}
+            className="text-sm"
+          >
+            <PoweroffOutlined />
+          </button>
+        </Tooltip>
       </div>
     </div>
   );

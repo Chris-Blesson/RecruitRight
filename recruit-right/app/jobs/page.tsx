@@ -2,19 +2,23 @@ import { fetchJobListing } from "@/lib/fetchJobListing";
 import { notFound } from "next/navigation";
 import JobListingTable from "./JobListingTable";
 import HeaderSetter from "../components/HeaderSetter";
+import NoJobs from "./NoJobs";
 
 const Jobs = async () => {
   try {
     const jobs = await fetchJobListing();
-    if (!jobs || !jobs.length) {
-      return <p>No jobs found</p>;
-    }
+
     return (
       <>
         <div>
           <HeaderSetter text={"Jobs"} />
         </div>
-        <JobListingTable jobListing={jobs} />
+        {(!jobs || !jobs.length) && (
+          <>
+            <NoJobs />
+          </>
+        )}
+        {!!jobs && !!jobs.length && <JobListingTable jobListing={jobs} />}
       </>
     );
   } catch (err) {

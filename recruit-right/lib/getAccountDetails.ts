@@ -3,6 +3,7 @@ import { knex } from "./db";
 
 export const getAccountDetails = async () => {
   const user = await currentUser();
+  console.log("user", user);
   const email = user?.primaryEmailAddress?.emailAddress;
   const accountDetails = await knex("accounts")
     .where({

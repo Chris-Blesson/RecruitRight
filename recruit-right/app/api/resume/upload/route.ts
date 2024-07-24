@@ -82,7 +82,6 @@ export async function POST(req: Request) {
       });
       console.log(">>>File created successfully", data);
 
-      // TODO: Update the resume url in accounts table
       await knex("accounts").where("account_id", accountId).update({
         resume_url: data.url,
       });
@@ -95,7 +94,6 @@ export async function POST(req: Request) {
         process_type: PROCESS_TYPE.RESUME_PARSE,
       });
 
-      //TODO: Create parsing job fastapi
       fetch(`${process.env.NEXT_PYTHON_SERVICE_URL}/parse`, {
         method: "POST",
         body: JSON.stringify({

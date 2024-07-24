@@ -15,7 +15,7 @@ const OnboardingForm = () => {
   const { signOut } = useClerk();
   return (
     <>
-      <nav className="fixed top-0 right-0 pr-5 py-2">
+      {/* <nav className="fixed top-0 right-0 pr-5 py-2">
         <button
           onClick={() => {
             signOut();
@@ -24,7 +24,7 @@ const OnboardingForm = () => {
         >
           <PoweroffOutlined />
         </button>
-      </nav>
+      </nav> */}
       <div className="flex">
         <div className="flex-1">
           <div className="relative w-full h-[100vh]">
@@ -62,7 +62,7 @@ const OnboardingForm = () => {
                 I want to look for jobs
               </button>
             </div>
-            <div>
+            <div className="h-[30%]">
               {isRecruiter && <RecruiterFormFields form={form} />}
               {!isRecruiter && <ResumeUploader />}
             </div>

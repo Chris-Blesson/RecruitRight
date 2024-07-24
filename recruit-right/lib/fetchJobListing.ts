@@ -16,6 +16,9 @@ const getStatus = ({ currentTime, startTime, endTime }) => {
 export const fetchJobListing = async () => {
   try {
     const accountDetails = await getAccountDetails();
+    // if (!accountDetails) {
+    //   return [];
+    // }
     const accountId = accountDetails.account_id;
     const isRecruiter = accountDetails.type === ACCOUNT_TYPE.RECRUITER;
 
