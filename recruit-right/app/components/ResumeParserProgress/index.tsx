@@ -1,11 +1,14 @@
 "use client";
 import { Button } from "antd";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 
 const ResumeParserProgress = () => {
   const [isParsingDone, setIsParsingDone] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const router = useRouter();
+  console.log("parser");
   const fetchResumeParsingProgress = useCallback(async () => {
     setIsLoading(true);
     fetch("/api/resume/parse-progress")
@@ -46,7 +49,7 @@ const ResumeParserProgress = () => {
         </p>
       </div>
       <div>
-        <Link href={"/user/1"}>
+        <Link href={"/user"}>
           <Button type="primary" disabled={!isParsingDone} loading={isLoading}>
             View my information
           </Button>
