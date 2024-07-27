@@ -1,7 +1,7 @@
 
 # RecruitRight
 
-This is a hackathon project.
+This is a hackathon project. - [blog url](https://rookiecoderlok.hashnode.dev/revolutionizing-recruitment-an-ai-powered-hackathon-project)
 
 
 ### RecruitRight frontend local setup
